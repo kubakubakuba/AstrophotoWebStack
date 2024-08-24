@@ -6,6 +6,10 @@
 	background-color: rgba(255, 255, 0, 0.6); /* Light yellow with 50% opacity */
 }
 
+body {
+	background-color: #777777!important;
+}
+
 .main-content {
 	padding-left: 25px;
 	padding-top: 25px;

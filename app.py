@@ -10,7 +10,14 @@ def index():
 
 @app.route('/stack')
 def stack():
-	return render_template('stack.html')
+	folders = {
+		"ngc7000": ["light", "dark", "flat", "bias"],
+		"test222": ["light", "dark", "flat", "bias"],
+		"ic1234": ["light", "dark", "flat", "bias"],
+		"m1": ["light", "dark", "flat", "bias"],
+	}
+
+	return render_template('stack.html', folders=folders)
 
 @app.route('/about')
 def about():

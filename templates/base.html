@@ -21,7 +21,7 @@
 	  </style>
 </head>
 <body>
-	<div class="logo-bar py-3" style="background-color: #000000;">
+	<!-- <div class="logo-bar py-3" style="background-color: #1E201E;">
 		<div class="container" style="margin-left:1%!important;">
 			<div class="row">
 				<div class="col-sm-8 d-flex align-items-center">
@@ -30,10 +30,10 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	</div> -->
 
-	<header class="bg-light text-dark">
-		<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<header class="bg-dark text-light">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 			<div class="container-fluid">
 				<a class="navbar-brand" href="/">AstrophotoWebStack</a>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,15 +53,15 @@
 		</nav>
 	</header>
 
-	<main class="main-content">
+	<main class="main-content text-light">
 		{% block content %}{% endblock content %}
 	</main>
 
-	<footer class="footer py-3 bg-light text-dark">
+	<footer class="footer py-3 bg-dark text-light">
 		<div class="container">
 			<div class="row justify-content-around">
 				<div class="col-sm-4 d-flex flex-column justify-content-center align-items-center">
-					<p style="color: black;">&copy; 2024 Jakub Pelc</p>
+					<p class="text-light">&copy; 2024 Jakub Pelc</p>
 				</div>
 				<div class="col-sm-4 text-center">
 					<a class="gh-button" href="https://github.com/kubakubakuba/AstrophotoWebStack"><div class="gh-button__icon"></div>AstrophotoWebStack</a>

@@ -1,10 +1,148 @@
 {% extends "base.html" %}
 
 {% block title %}
-Stack
+Stacking Software
 {% endblock title %}
 
 {% block content %}
-<h1>Welcome to the homepage</h1>
-<a href="{{ url_for('index') }}">Go back</a> <br />
+    <div class="card">
+        <div class="card-body">
+            <form method="post" id="stackingForm">
+				<h5 class="text-center">Root folder</h5>
+                <div class="form-group">
+                    <select id="rootFolder" name="rootFolder" class="form-control" required onchange="populateSubFolders();">
+                        <option value="" disabled selected>Select a root folder</option>
+                        {% for folder in folders.keys() %}
+                            <option value="{{ folder }}">{{ folder }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+				<hr />
+                
+                <h5 class="text-center">Masters</h5>
+                <div class="form-group row justify-content-center">
+                    <div class="col-auto">
+                        <label for="masterLight">Light:</label>
+                        <input type="checkbox" id="masterLight" name="masterLight">
+                    </div>
+                    <div class="col-auto">
+                        <label for="masterDark">Dark:</label>
+                        <input type="checkbox" id="masterDark" name="masterDark">
+                    </div>
+                    <div class="col-auto">
+                        <label for="masterFlat">Flat:</label>
+                        <input type="checkbox" id="masterFlat" name="masterFlat">
+                    </div>
+                    <div class="col-auto">
+                        <label for="masterBias">Bias:</label>
+                        <input type="checkbox" id="masterBias" name="masterBias">
+                    </div>
+                </div>
+
+                <hr />
+
+                <h5 class="text-center">Folders</h5>
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="lightFolder">Lights:</label>
+                        <select id="lightFolder" name="lightFolder" class="form-control" disabled>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="darkFolder">Darks:</label>
+                        <select id="darkFolder" name="darkFolder" class="form-control" disabled>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="flatFolder">Flats:</label>
+                        <select id="flatFolder" name="flatFolder" class="form-control" disabled>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="biasFolder">Biases:</label>
+                        <select id="biasFolder" name="biasFolder" class="form-control" disabled>
+                        </select>
+                    </div>
+                </div>
+
+                <hr />
+
+                <h5 class="text-center">Image Type</h5>
+                <div class="form-group row justify-content-center">
+                    <div class="col-auto">
+                        <label for="imageType">CFA:</label>
+                        <input type="radio" id="cfa" name="imageType" value="cfa" checked>
+                    </div>
+                    <div class="col-auto">
+                        <label for="imageType">Mono:</label>
+                        <input type="radio" id="mono" name="imageType" value="mono">
+                    </div>
+                </div>
+
+                <div class="card card-btn col-sm-4 mx-auto mt-4" onclick="validateForm();">
+                    <div class="card-body text-center">
+                        Stack
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function populateSubFolders() {
+            const rootFolder = document.getElementById('rootFolder').value;
+            const subFolders = {{ folders|tojson }};
+            const lightFolder = document.getElementById('lightFolder');
+            const darkFolder = document.getElementById('darkFolder');
+            const flatFolder = document.getElementById('flatFolder');
+            const biasFolder = document.getElementById('biasFolder');
+
+            // Clear existing options
+            lightFolder.innerHTML = '';
+            darkFolder.innerHTML = '';
+            flatFolder.innerHTML = '';
+            biasFolder.innerHTML = '';
+
+            // Populate new options
+            if (subFolders[rootFolder]) {
+                subFolders[rootFolder].forEach(subFolder => {
+                    const option = new Option(subFolder, subFolder);
+                    lightFolder.add(option.cloneNode(true));
+                    darkFolder.add(option.cloneNode(true));
+                    flatFolder.add(option.cloneNode(true));
+                    biasFolder.add(option.cloneNode(true));
+                });
+            }
+
+            // Enable the dropdowns
+            lightFolder.disabled = false;
+            darkFolder.disabled = false;
+            flatFolder.disabled = false;
+            biasFolder.disabled = false;
+        }
+
+        function validateForm() {
+            const form = document.getElementById('stackingForm');
+            const rootFolder = form.elements['rootFolder'].value;
+            const lightFolder = form.elements['lightFolder'].value;
+            const darkFolder = form.elements['darkFolder'].value;
+            const flatFolder = form.elements['flatFolder'].value;
+            const biasFolder = form.elements['biasFolder'].value;
+            const imageType = form.elements['imageType'].value;
+        
+            if (rootFolder === '' || lightFolder === '' || darkFolder === '' || flatFolder === '' || biasFolder === '' || imageType === '') {
+                alert('Please fill out all fields.');
+                return false;
+            }
+        
+            form.submit();
+            return true;
+        }
+    </script>
 {% endblock content %}
