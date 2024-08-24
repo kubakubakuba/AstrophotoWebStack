@@ -210,14 +210,47 @@ Stacking Software
             const form = document.getElementById('stackingForm');
             const rootFolder = form.elements['rootFolder'].value;
             const lightFolder = form.elements['lightFolder'].value;
+			const darkFolder = form.elements['darkFolder'].value;
+			const flatFolder = form.elements['flatFolder'].value;
+			const biasFolder = form.elements['biasFolder'].value;
 
-            if (rootFolder === '' || lightFolder === '') {
-                alert('Please fill out all fields.');
+			const masterDark = form.elements['masterDark'].value;
+			const masterFlat = form.elements['masterFlat'].value;
+			const masterBias = form.elements['masterBias'].value;
+
+			let rootAndLight = rootFolder !== '' && lightFolder !== '';
+
+			let flatAndBias = false;
+			if (flatFolder !== '' && biasFolder !== '') {
+				flatAndBias = true;
+			}
+
+			if (flatFolder === '') {
+				flatAndBias = true;
+			}
+
+			let darkAndBias = false;
+			if (darkFolder !== '' && biasFolder !== '') {
+				darkAndBias = true;
+			}
+
+			if (darkFolder === '') {
+				darkAndBias = true;
+			}
+
+			darkAndBias = darkAndBias || masterBias !== '';
+			flatAndBias = flatAndBias || masterBias !== '';
+
+			//if root folder is not null and light folder is not null and when flat folder is not null bias folder must not be null
+            if (rootAndLight && flatAndBias && darkAndBias) {
+				form.submit();
+				return true;
+			}
+			else{
+                alert('Please fill out all fields. Flats and Darks must have corresponding Biases / master Bias.');
                 return false;
             }
 
-            form.submit();
-            return true;
         }
 
         function resetForm() {
