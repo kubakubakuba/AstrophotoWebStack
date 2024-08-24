@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}
+Forbidden
+{% endblock title %}
+
+{% block content %}
+<h3>Sorry, the page you are trying to access is forbidden.</h3>
+<a href="{{ url_for('index') }}">Go back to the homepage</a>
+{% endblock content %}
