@@ -8,7 +8,7 @@ Stacking Software
     <div class="card">
         <div class="card-body">
             <form method="post" id="stackingForm">
-				<h5 class="text-center">Root folder</h5>
+                <h5 class="text-center">Root folder</h5>
                 <div class="form-group">
                     <select id="rootFolder" name="rootFolder" class="form-control" required onchange="populateSubFolders();">
                         <option value="" disabled selected>Select a root folder</option>
@@ -17,77 +17,102 @@ Stacking Software
                         {% endfor %}
                     </select>
                 </div>
-				<hr />
-                
-                <h5 class="text-center">Masters</h5>
-                <div class="form-group row justify-content-center">
-                    <div class="col-auto">
-                        <label for="masterLight">Light:</label>
-                        <input type="checkbox" id="masterLight" name="masterLight">
-                    </div>
-                    <div class="col-auto">
-                        <label for="masterDark">Dark:</label>
-                        <input type="checkbox" id="masterDark" name="masterDark">
-                    </div>
-                    <div class="col-auto">
-                        <label for="masterFlat">Flat:</label>
-                        <input type="checkbox" id="masterFlat" name="masterFlat">
-                    </div>
-                    <div class="col-auto">
-                        <label for="masterBias">Bias:</label>
-                        <input type="checkbox" id="masterBias" name="masterBias">
-                    </div>
-                </div>
-
                 <hr />
 
-                <h5 class="text-center">Folders</h5>
-                <div class="form-group row">
-                    <div class="col">
-                        <label for="lightFolder">Lights:</label>
-                        <select id="lightFolder" name="lightFolder" class="form-control" disabled>
+                <div id="collapsedSections" style="display: none;">
+                    <h5 class="text-center">Masters Folder</h5>
+                    <div class="form-group">
+                        <select id="mastersFolder" name="mastersFolder" class="form-control" disabled onchange="populateMasterDropdowns();">
+                            <option value="" disabled selected>Select a masters folder</option>
                         </select>
                     </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col">
-                        <label for="darkFolder">Darks:</label>
-                        <select id="darkFolder" name="darkFolder" class="form-control" disabled>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col">
-                        <label for="flatFolder">Flats:</label>
-                        <select id="flatFolder" name="flatFolder" class="form-control" disabled>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col">
-                        <label for="biasFolder">Biases:</label>
-                        <select id="biasFolder" name="biasFolder" class="form-control" disabled>
-                        </select>
-                    </div>
-                </div>
+                    <hr />
 
-                <hr />
-
-                <h5 class="text-center">Image Type</h5>
-                <div class="form-group row justify-content-center">
-                    <div class="col-auto">
-                        <label for="imageType">CFA:</label>
-                        <input type="radio" id="cfa" name="imageType" value="cfa" checked>
+                    <h5 class="text-center">Masters</h5>
+                    <div class="form-group row justify-content-center">
+                        <div class="col-auto">
+                            <label for="masterBias">Master Bias:</label>
+                            <select id="masterBias" name="masterBias" class="form-control" disabled onchange="greyOutFolder('biasFolder', this.value);">
+                                <option value="" disabled selected>Select a master bias</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <label for="masterDark">Master Dark:</label>
+                            <select id="masterDark" name="masterDark" class="form-control" disabled onchange="greyOutFolder('darkFolder', this.value);">
+                                <option value="" disabled selected>Select a master dark</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <label for="masterFlat">Master Flat:</label>
+                            <select id="masterFlat" name="masterFlat" class="form-control" disabled onchange="greyOutFolder('flatFolder', this.value);">
+                                <option value="" disabled selected>Select a master flat</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="col-auto">
-                        <label for="imageType">Mono:</label>
-                        <input type="radio" id="mono" name="imageType" value="mono">
-                    </div>
-                </div>
 
-                <div class="card card-btn col-sm-4 mx-auto mt-4" onclick="validateForm();">
-                    <div class="card-body text-center">
-                        Stack
+                    <hr />
+
+                    <h5 class="text-center">Folders</h5>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="biasFolder">Biases:</label>
+                            <select id="biasFolder" name="biasFolder" class="form-control" disabled>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="darkFolder">Darks:</label>
+                            <select id="darkFolder" name="darkFolder" class="form-control" disabled>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="flatFolder">Flats:</label>
+                            <select id="flatFolder" name="flatFolder" class="form-control" disabled>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label for="lightFolder">Lights:</label>
+                            <select id="lightFolder" name="lightFolder" class="form-control" disabled>
+                            </select>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <h5 class="text-center">Image Type</h5>
+                    <div class="form-group row justify-content-center">
+                        <div class="col-auto">
+                            <select id="imageType" name="imageType" class="form-control">
+                                <option value="cfa">CFA</option>
+                                <option value="mono">Mono</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="form-group row justify-content-center">
+                        <div class="col-auto">
+                            <div class="card card-btn mx-auto mt-4" style="width: 150px;" onclick="validateForm();">
+                                <div class="card-body text-center">
+                                    Stack
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row justify-content-center">
+                        <div class="col-auto">
+                            <div class="card card-btn mx-auto mt-4" style="width: 150px;" onclick="resetForm();">
+                                <div class="card-body text-center">
+                                    Reset
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -98,21 +123,24 @@ Stacking Software
         function populateSubFolders() {
             const rootFolder = document.getElementById('rootFolder').value;
             const subFolders = {{ folders|tojson }};
+            const mastersFolder = document.getElementById('mastersFolder');
             const lightFolder = document.getElementById('lightFolder');
             const darkFolder = document.getElementById('darkFolder');
             const flatFolder = document.getElementById('flatFolder');
             const biasFolder = document.getElementById('biasFolder');
 
             // Clear existing options
-            lightFolder.innerHTML = '';
-            darkFolder.innerHTML = '';
-            flatFolder.innerHTML = '';
-            biasFolder.innerHTML = '';
+            mastersFolder.innerHTML = '<option value="" disabled selected>Select a masters folder</option>';
+            lightFolder.innerHTML = '<option value="" disabled selected>Select a light folder</option>';
+            darkFolder.innerHTML = '<option value="" disabled selected>Select a dark folder</option>';
+            flatFolder.innerHTML = '<option value="" disabled selected>Select a flat folder</option>';
+            biasFolder.innerHTML = '<option value="" disabled selected>Select a bias folder</option>';
 
             // Populate new options
             if (subFolders[rootFolder]) {
-                subFolders[rootFolder].forEach(subFolder => {
+                Object.keys(subFolders[rootFolder]).forEach(subFolder => {
                     const option = new Option(subFolder, subFolder);
+                    mastersFolder.add(option.cloneNode(true));
                     lightFolder.add(option.cloneNode(true));
                     darkFolder.add(option.cloneNode(true));
                     flatFolder.add(option.cloneNode(true));
@@ -120,29 +148,119 @@ Stacking Software
                 });
             }
 
-            // Enable the dropdowns
+            // Enable the masters folder dropdown and individual folder selects
+            mastersFolder.disabled = false;
             lightFolder.disabled = false;
             darkFolder.disabled = false;
             flatFolder.disabled = false;
             biasFolder.disabled = false;
+
+            // Uncollapse the sections
+            document.getElementById('collapsedSections').style.display = 'block';
         }
 
-        function validateForm() {
+        function populateMasterDropdowns() {
+            const rootFolder = document.getElementById('rootFolder').value;
+            const mastersFolder = document.getElementById('mastersFolder').value;
+            const subFolders = {{ folders|tojson }};
+            const masterDark = document.getElementById('masterDark');
+            const masterFlat = document.getElementById('masterFlat');
+            const masterBias = document.getElementById('masterBias');
+
+            // Clear existing options
+            masterDark.innerHTML = '<option value="" disabled selected>Select a master dark</option>';
+            masterFlat.innerHTML = '<option value="" disabled selected>Select a master flat</option>';
+            masterBias.innerHTML = '<option value="" disabled selected>Select a master bias</option>';
+
+            // Populate new options
+            if (subFolders[rootFolder] && subFolders[rootFolder][mastersFolder]) {
+                subFolders[rootFolder][mastersFolder].forEach(file => {
+                    const option = new Option(file, file);
+                    masterDark.add(option.cloneNode(true));
+                    masterFlat.add(option.cloneNode(true));
+                    masterBias.add(option.cloneNode(true));
+                });
+            }
+
+            // Enable the master dropdowns
+            masterDark.disabled = false;
+            masterFlat.disabled = false;
+            masterBias.disabled = false;
+        }
+
+        function greyOutFolder(folderId, selectedValue) {
+            const folderSelect = document.getElementById(folderId);
+            const options = folderSelect.options;
+
+            for (let i = 0; i < options.length; i++) {
+                if (options[i].value === selectedValue) {
+                    options[i].disabled = true;
+                } else {
+                    options[i].disabled = false;
+                }
+            }
+        }
+
+        function disableFolder(folderId, disable) {
+            const folderSelect = document.getElementById(folderId);
+            folderSelect.disabled = disable;
+        }
+
+		function validateForm() {
             const form = document.getElementById('stackingForm');
             const rootFolder = form.elements['rootFolder'].value;
             const lightFolder = form.elements['lightFolder'].value;
-            const darkFolder = form.elements['darkFolder'].value;
-            const flatFolder = form.elements['flatFolder'].value;
-            const biasFolder = form.elements['biasFolder'].value;
-            const imageType = form.elements['imageType'].value;
-        
-            if (rootFolder === '' || lightFolder === '' || darkFolder === '' || flatFolder === '' || biasFolder === '' || imageType === '') {
+
+            if (rootFolder === '' || lightFolder === '') {
                 alert('Please fill out all fields.');
                 return false;
             }
-        
+
             form.submit();
             return true;
         }
+
+        function resetForm() {
+            const form = document.getElementById('stackingForm');
+            form.reset();
+
+            // Disable all dropdowns except root folder
+            document.getElementById('mastersFolder').disabled = true;
+            document.getElementById('masterDark').disabled = true;
+            document.getElementById('masterFlat').disabled = true;
+            document.getElementById('masterBias').disabled = true;
+            document.getElementById('lightFolder').disabled = true;
+            document.getElementById('darkFolder').disabled = true;
+            document.getElementById('flatFolder').disabled = true;
+            document.getElementById('biasFolder').disabled = true;
+
+            // Hide the sections
+            document.getElementById('collapsedSections').style.display = 'none';
+        }
+
+        // Initially hide the sections and reset the form
+        document.addEventListener('DOMContentLoaded', function() {
+            resetForm();
+        });
+
+        // Populate subfolders when the root folder is changed
+        document.getElementById('rootFolder').addEventListener('change', function() {
+            populateSubFolders();
+        });
+
+        // Disable the appropriate folder when a master file is selected
+        document.getElementById('masterDark').addEventListener('change', function() {
+            greyOutFolder('darkFolder', this.value);
+            disableFolder('darkFolder', this.value !== '');
+        });
+        document.getElementById('masterFlat').addEventListener('change', function() {
+            greyOutFolder('flatFolder', this.value);
+            disableFolder('flatFolder', this.value !== '');
+        });
+        document.getElementById('masterBias').addEventListener('change', function() {
+            greyOutFolder('biasFolder', this.value);
+            disableFolder('biasFolder', this.value !== '');
+        });
     </script>
+
 {% endblock content %}
