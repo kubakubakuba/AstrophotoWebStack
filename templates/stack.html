@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Stacking Software
+AstrophotoWebStack
 {% endblock title %}
 
 {% block content %}
@@ -96,6 +96,28 @@ Stacking Software
 
                     <hr />
 
+                    <h5 class="text-center">Image integration - Winsorized sigma clipping</h5>
+                    <div class="form-group row">
+                        <label for="sigmaLow" class="col-sm-2 col-form-label">Sigma Low</label>
+                        <div class="col-sm-8">
+                            <input type="range" class="form-control-range" id="sigmaLow" name="sigmaLow" min="0" max="10" value="3" step="0.1" oninput="updateSliderValue('sigmaLow', 'sigmaLowValue')">
+                        </div>
+                        <div class="col-sm-2">
+                            <span id="sigmaLowValue">3</span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="sigmaHigh" class="col-sm-2 col-form-label">Sigma High</label>
+                        <div class="col-sm-8">
+                            <input type="range" class="form-control-range" id="sigmaHigh" name="sigmaHigh" min="0" max="10" value="3" step="0.1" oninput="updateSliderValue('sigmaHigh', 'sigmaHighValue')">
+                        </div>
+                        <div class="col-sm-2">
+                            <span id="sigmaHighValue">3</span>
+                        </div>
+                    </div>
+
+                    <hr />
+
                     <div class="form-group row justify-content-center">
                         <div class="col-auto">
                             <div class="card card-btn mx-auto mt-4" style="width: 150px;" onclick="validateForm();">
@@ -128,14 +150,14 @@ Stacking Software
             const darkFolder = document.getElementById('darkFolder');
             const flatFolder = document.getElementById('flatFolder');
             const biasFolder = document.getElementById('biasFolder');
-
+    
             // Clear existing options
             mastersFolder.innerHTML = '<option value="" disabled selected>Select a masters folder</option>';
             lightFolder.innerHTML = '<option value="" disabled selected>Select a light folder</option>';
             darkFolder.innerHTML = '<option value="" disabled selected>Select a dark folder</option>';
             flatFolder.innerHTML = '<option value="" disabled selected>Select a flat folder</option>';
             biasFolder.innerHTML = '<option value="" disabled selected>Select a bias folder</option>';
-
+    
             // Populate new options
             if (subFolders[rootFolder]) {
                 Object.keys(subFolders[rootFolder]).forEach(subFolder => {
@@ -147,18 +169,18 @@ Stacking Software
                     biasFolder.add(option.cloneNode(true));
                 });
             }
-
+    
             // Enable the masters folder dropdown and individual folder selects
             mastersFolder.disabled = false;
             lightFolder.disabled = false;
             darkFolder.disabled = false;
             flatFolder.disabled = false;
             biasFolder.disabled = false;
-
+    
             // Uncollapse the sections
             document.getElementById('collapsedSections').style.display = 'block';
         }
-
+    
         function populateMasterDropdowns() {
             const rootFolder = document.getElementById('rootFolder').value;
             const mastersFolder = document.getElementById('mastersFolder').value;
@@ -166,12 +188,12 @@ Stacking Software
             const masterDark = document.getElementById('masterDark');
             const masterFlat = document.getElementById('masterFlat');
             const masterBias = document.getElementById('masterBias');
-
+    
             // Clear existing options
             masterDark.innerHTML = '<option value="" disabled selected>Select a master dark</option>';
             masterFlat.innerHTML = '<option value="" disabled selected>Select a master flat</option>';
             masterBias.innerHTML = '<option value="" disabled selected>Select a master bias</option>';
-
+    
             // Populate new options
             if (subFolders[rootFolder] && subFolders[rootFolder][mastersFolder]) {
                 subFolders[rootFolder][mastersFolder].forEach(file => {
@@ -181,17 +203,17 @@ Stacking Software
                     masterBias.add(option.cloneNode(true));
                 });
             }
-
+    
             // Enable the master dropdowns
             masterDark.disabled = false;
             masterFlat.disabled = false;
             masterBias.disabled = false;
         }
-
+    
         function greyOutFolder(folderId, selectedValue) {
             const folderSelect = document.getElementById(folderId);
             const options = folderSelect.options;
-
+    
             for (let i = 0; i < options.length; i++) {
                 if (options[i].value === selectedValue) {
                     options[i].disabled = true;
@@ -200,63 +222,30 @@ Stacking Software
                 }
             }
         }
-
+    
         function disableFolder(folderId, disable) {
             const folderSelect = document.getElementById(folderId);
             folderSelect.disabled = disable;
         }
-
-		function validateForm() {
+    
+        function validateForm() {
             const form = document.getElementById('stackingForm');
             const rootFolder = form.elements['rootFolder'].value;
             const lightFolder = form.elements['lightFolder'].value;
-			const darkFolder = form.elements['darkFolder'].value;
-			const flatFolder = form.elements['flatFolder'].value;
-			const biasFolder = form.elements['biasFolder'].value;
-
-			const masterDark = form.elements['masterDark'].value;
-			const masterFlat = form.elements['masterFlat'].value;
-			const masterBias = form.elements['masterBias'].value;
-
-			let rootAndLight = rootFolder !== '' && lightFolder !== '';
-
-			let flatAndBias = false;
-			if (flatFolder !== '' && biasFolder !== '') {
-				flatAndBias = true;
-			}
-
-			if (flatFolder === '') {
-				flatAndBias = true;
-			}
-
-			let darkAndBias = false;
-			if (darkFolder !== '' && biasFolder !== '') {
-				darkAndBias = true;
-			}
-
-			if (darkFolder === '') {
-				darkAndBias = true;
-			}
-
-			darkAndBias = darkAndBias || masterBias !== '';
-			flatAndBias = flatAndBias || masterBias !== '';
-
-			//if root folder is not null and light folder is not null and when flat folder is not null bias folder must not be null
-            if (rootAndLight && flatAndBias && darkAndBias) {
-				form.submit();
-				return true;
-			}
-			else{
-                alert('Please fill out all fields. Flats and Darks must have corresponding Biases / master Bias.');
+    
+            if (rootFolder === '' || lightFolder === '') {
+                alert('Please fill out all fields.');
                 return false;
             }
-
+    
+            form.submit();
+            return true;
         }
-
+    
         function resetForm() {
             const form = document.getElementById('stackingForm');
             form.reset();
-
+    
             // Disable all dropdowns except root folder
             document.getElementById('mastersFolder').disabled = true;
             document.getElementById('masterDark').disabled = true;
@@ -266,21 +255,31 @@ Stacking Software
             document.getElementById('darkFolder').disabled = true;
             document.getElementById('flatFolder').disabled = true;
             document.getElementById('biasFolder').disabled = true;
-
+    
             // Hide the sections
             document.getElementById('collapsedSections').style.display = 'none';
+    
+            // Reset slider values
+            updateSliderValue('slider1', 'slider1Value');
+            updateSliderValue('slider2', 'slider2Value');
         }
-
+    
+        function updateSliderValue(sliderId, valueId) {
+            const slider = document.getElementById(sliderId);
+            const valueSpan = document.getElementById(valueId);
+            valueSpan.textContent = slider.value;
+        }
+    
         // Initially hide the sections and reset the form
         document.addEventListener('DOMContentLoaded', function() {
             resetForm();
         });
-
+    
         // Populate subfolders when the root folder is changed
         document.getElementById('rootFolder').addEventListener('change', function() {
             populateSubFolders();
         });
-
+    
         // Disable the appropriate folder when a master file is selected
         document.getElementById('masterDark').addEventListener('change', function() {
             greyOutFolder('darkFolder', this.value);

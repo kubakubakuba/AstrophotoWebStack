@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}
+AstrophotoWebStack
+{% endblock title %}
+
+{% block content %}
+{% for d in data %}
+	{{ data[d] }} <br />
+{% endfor %}
+
+<hr />
+
+<h2>Stacking log:</h2>
+
+<div id="logContent"></div>
+
+<script>
+	function fetchLogContent() {
+		fetch('/log/{{ stack_id }}')
+			.then(response => response.json())
+			.then(data => {
+				document.getElementById('logContent').innerText = data.log_content;
+			})
+			.catch(error => console.error('Error fetching log content:', error));
+	}
+
+	setInterval(fetchLogContent, 5000);
+
+	fetchLogContent();
+</script>
+
+{% endblock content %}

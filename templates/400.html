@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}
+400 Bad Request
+{% endblock title %}
+
+{% block content %}
+<h3>Bad Request.</h3>
+<a href="{{ url_for('index') }}">Go back to the homepage</a>
+{% endblock content %}
