@@ -13,64 +13,37 @@ app.secret_key = os.getenv("SECRET_KEY")
 DOC_ROOT = os.getenv("HOME_DIR")
 STACK_FOLDER = os.path.join(DOC_ROOT, ".stack")
 
+def read_folders_rec(level, curr_dir):
+	folders = {}
+	for root, dirs, files in os.walk(curr_dir):
+		if root == curr_dir:
+			for d in dirs:
+				folders[d] = {}
+
+	if level == 0:
+		#read all folders in the current directory
+		return folders
+	
+	ret = {}
+
+	for f in folders:
+		ret[f] = read_folders_rec(level - 1, os.path.join(curr_dir, f))
+
+	return ret
+
+
 @app.route("/")
 def index():
 	return render_template('index.html')
 
 @app.route('/stack', methods=['GET', 'POST'])
 def stack():
-	# folders = {
-	# 	"ngc7000": {
-	# 		"light": ["light1.fit", "light2.fit", "light3.cr2"],
-	# 		"dark": ["dark1.fit", "dark2.fit", "dark3.cr2"],
-	# 		"flat": ["flat1.fit", "flat2.fit", "flat3.cr2"],
-	# 		"bias": ["bias1.fit", "bias2.fit", "bias3.cr2"],
-	# 		"masters": ["master_light.xisf", "master_dark.xisf", "master_flat.xisf", "master_bias.xisf"]
-	# 	},
-	# 	"test222": {
-	# 		"light": ["light1.fit", "light2.fit", "light3.cr2"],
-	# 		"dark": ["dark1.fit", "dark2.fit", "dark3.cr2"],
-	# 		"flat": ["flat1.fit", "flat2.fit", "flat3.cr2"],
-	# 		"bias": ["bias1.fit", "bias2.fit", "bias3.cr2"],
-	# 		"masters": ["master_light.xisf", "master_dark.xisf", "master_flat.xisf", "master_bias.xisf"]
-	# 	},
-	# 	"ic1234": {
-	# 		"light": ["light1.fit", "light2.fit", "light3.cr2"],
-	# 		"dark": ["dark1.fit", "dark2.fit", "dark3.cr2"],
-	# 		"flat": ["flat1.fit", "flat2.fit", "flat3.cr2"],
-	# 		"bias": ["bias1.fit", "bias2.fit", "bias3.cr2"],
-	# 		"masters": ["master_light.xisf", "master_dark.xisf", "master_flat.xisf", "master_bias.xisf"]
-	# 	},
-	# 	"m1": {
-	# 		"light": ["light1.fit", "light2.fit", "light3.cr2"],
-	# 		"dark": ["dark1.fit", "dark2.fit", "dark3.cr2"],
-	# 		"flat": ["flat1.fit", "flat2.fit", "flat3.cr2"],
-	# 		"bias": ["bias1.fit", "bias2.fit", "bias3.cr2"],
-	# 		"masters": ["master_light.xisf", "master_dark.xisf", "master_flat.xisf", "master_bias.xisf"]
-	# 	}
-	# }
 
-	#read folders and files recursively (up to 2 levels) from the DOC_ROOT folder
-
-	folders = {}
-	for root, dirs, files in os.walk(DOC_ROOT):
-		if root == DOC_ROOT:
-			for d in dirs:
-				folders[d] = {}
-				for root2, dirs2, files2 in os.walk(os.path.join(DOC_ROOT, d)):
-					if root2 == os.path.join(DOC_ROOT, d):
-						for d2 in dirs2:
-							folders[d][d2] = []
-							for root3, dirs3, files3 in os.walk(os.path.join(DOC_ROOT, d, d2)):
-								if root3 == os.path.join(DOC_ROOT, d, d2):
-									for f in files3:
-										folders[d][d2].append(f)
+	folders = read_folders_rec(2, DOC_ROOT)
 
 	#remove .stack folder from the list
 	if ".stack" in folders:
 		del folders[".stack"]
-
-	print(folders)
 
 	if request.method == 'POST':
 		root_folder = request.form.get('rootFolder')
