@@ -24,31 +24,22 @@ AstrophotoWebStack
 			.then(data => {
 				const logText = document.getElementById('logText');
 				logText.innerText = data.log_content;
-				//if there is "Trace is stopped" in the log, then the stacking is finished
 				if (data.log_content.includes('Trace is stopped')) {
-					//look for [status: error] in the log
-					clearInterval(fetchLogContent);
-
-					if (!data.log_content.includes('[status: error]')) {
+					if (data.log_content.includes('[status: success]')) {
 						document.getElementById('logContent').style.color = '#d4edda';
-						//redirect the user after 10 seconds to the result page
-						setTimeout(() => {
-							window.location.href = '/result/{{ stack_id }}';
-						}, 10000);
-
 					} else {
 						document.getElementById('logContent').style.color = '#f8d7da';
 					}
-
 				}
 				logText.parentElement.scrollTop = logText.scrollHeight; // Autoscroll to the bottom
 			})
 			.catch(error => console.error('Error fetching log content:', error));
 	}
 
-	setInterval(fetchLogContent, 100);
-
 	fetchLogContent();
 </script>
+
+<h2>Result:</h2>
+<a href="/download/{{ stack_id }}">result.fit</a>
 
 {% endblock content %}

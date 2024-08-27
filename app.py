@@ -1,13 +1,16 @@
-from flask import Flask, render_template, session, redirect, url_for, request, jsonify
+from flask import Flask, render_template, session, redirect, url_for, request, jsonify, send_file
 from markupsafe import escape
 from datetime import datetime
 import toml
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = 'e4ed89f02f3aa07a4309daaadb454bfff'
+app.secret_key = os.getenv("SECRET_KEY")
 
-DOC_ROOT = "/mnt/c/Users/Jakub/Desktop/astrotmp/"
+DOC_ROOT = os.getenv("HOME_DIR")
 STACK_FOLDER = os.path.join(DOC_ROOT, ".stack")
 
 @app.route("/")
@@ -156,6 +159,28 @@ def get_log(stack_id):
 	with open(log_path, 'r') as file:
 		log_content = file.read()
 	return jsonify(log_content=log_content)
+
+@app.route('/result/<int:stack_id>')
+def result(stack_id):
+	return render_template('result.html', stack_id=stack_id)
+
+@app.route('/download/<int:stack_id>')
+def download(stack_id):
+	#serve the file for download
+
+	file = f"stack_{stack_id}.log"
+	log_file = os.path.join(STACK_FOLDER, file)
+
+	with open(log_file, 'r') as f:
+		lines = f.readlines()
+		last_line = lines[-1]
+		result_file = last_line.split(": ")[1].strip()
+
+	if not os.path.exists(result_file):
+		return render_template('404.html'), 404
+	
+	return send_file(result_file, as_attachment=True)
+
 
 @app.route('/about')
 def about():
