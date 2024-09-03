@@ -5,6 +5,11 @@ import shutil
 from pysiril.siril   import *
 from pysiril.wrapper import *
 
+from dotenv import load_dotenv
+load_dotenv()
+
+SIRIL_EXEC = os.getenv("SIRIL_CLI")
+
 class SirilWrapper():
 	def __init__(self, data):
 		self.data = data
@@ -24,7 +29,7 @@ class SirilWrapper():
 
 	def stack(self):
 
-		app = Siril(f"/usr/bin/siril-cli")
+		app = Siril(f"{SIRIL_EXEC}")
 
 		try:
 			self.cmd = Wrapper(app)
