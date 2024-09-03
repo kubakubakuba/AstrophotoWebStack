@@ -22,58 +22,58 @@ def get_toml_files():
 if __name__ == "__main__":
 	files = get_toml_files()
 	
-	current = files[0]
+	for f in files:
 
-	data = toml.load(os.path.join(STACK_FOLDER, current))
-	# Replace "None" with None
-	for key in data:
-		if data[key] == "None":
-			data[key] = ''
-	
-	# Same name as the toml file but with a .log extension
-	log_file = os.path.join(STACK_FOLDER, current.replace('.toml', '.log'))
+		data = toml.load(os.path.join(STACK_FOLDER, f))
+		# Replace "None" with None
+		for key in data:
+			if data[key] == "None":
+				data[key] = ''
+		
+		# Same name as the toml file but with a .log extension
+		log_file = os.path.join(STACK_FOLDER, f.replace('.toml', '.log'))
 
-	# Set up logging
-	logger = logging.getLogger()
-	logger.setLevel(logging.INFO)
+		# Set up logging
+		logger = logging.getLogger()
+		logger.setLevel(logging.INFO)
 
-	# File handler
-	file_handler = logging.FileHandler(log_file)
-	file_handler.setLevel(logging.INFO)
-	file_handler.setFormatter(logging.Formatter('%(message)s'))
+		# File handler
+		file_handler = logging.FileHandler(log_file)
+		file_handler.setLevel(logging.INFO)
+		file_handler.setFormatter(logging.Formatter('%(message)s'))
 
-	# Console handler
-	console_handler = logging.StreamHandler()
-	console_handler.setLevel(logging.INFO)
-	console_handler.setFormatter(logging.Formatter('%(message)s'))
+		# Console handler
+		console_handler = logging.StreamHandler()
+		console_handler.setLevel(logging.INFO)
+		console_handler.setFormatter(logging.Formatter('%(message)s'))
 
-	# Add handlers to the logger
-	logger.addHandler(file_handler)
-	logger.addHandler(console_handler)
+		# Add handlers to the logger
+		logger.addHandler(file_handler)
+		logger.addHandler(console_handler)
 
-	sw = SirilWrapper(data)
+		sw = SirilWrapper(data)
 
-	# Redirect stdout to the logging system
-	class StreamToLogger:
-		def __init__(self, logger, log_level=logging.INFO):
-			self.logger = logger
-			self.log_level = log_level
-			self.linebuf = ''
+		# Redirect stdout to the logging system
+		class StreamToLogger:
+			def __init__(self, logger, log_level=logging.INFO):
+				self.logger = logger
+				self.log_level = log_level
+				self.linebuf = ''
 
-		def write(self, buf):
-			for line in buf.rstrip().splitlines():
-				self.logger.log(self.log_level, line.rstrip())
+			def write(self, buf):
+				for line in buf.rstrip().splitlines():
+					self.logger.log(self.log_level, line.rstrip())
 
-		def flush(self):
-			pass
+			def flush(self):
+				pass
 
-	stream_to_logger = StreamToLogger(logger)
-	with redirect_stdout(stream_to_logger):
-		sw.stack()
+		stream_to_logger = StreamToLogger(logger)
+		with redirect_stdout(stream_to_logger):
+			sw.stack()
 
-	with open(log_file, 'a') as f:
-		f.write(f"Created at {current}\n")
-		f.write(f"Result file: {os.path.join(DOC_ROOT, data['root_folder'], 'result.fit')}\n")
+		with open(log_file, 'a') as f:
+			f.write(f"Created at {f}\n")
+			f.write(f"Result file: {os.path.join(DOC_ROOT, data['root_folder'], 'result.fit')}\n")
 
-	# Remove the .toml file
-	#os.remove(os.path.join(STACK_FOLDER, current))
+		# Remove the .toml file
+		#os.remove(os.path.join(STACK_FOLDER, current))
