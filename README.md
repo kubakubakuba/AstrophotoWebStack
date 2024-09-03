@@ -13,25 +13,25 @@ The home dir is the directory where the individual project folders are to be sto
 ROOT_DIR
 - PROJECT_NAME
   - LIGHTS
-    - LIGHT1
+    - LIGHT1.fit
     - ...
-    - LIGHTN
+    - LIGHTN.fit
   - DARKS
-    - DARK1
+    - DARK1.fit
     - ...
-    - DARKN
+    - DARKN.fit
   - FLATS
-    - FLAT1
+    - FLAT1.fit
     - ...
-    - FLATN
+    - FLATN.fit
   - BIAS
-    - BIAS1
+    - BIAS1.fit
     - ...
-    - BIASN
+    - BIASN.fit
   - MASTERS
-    - MASTER_FLAT
-    - MASTER_BIAS
-    - MASTER_DARK
+    - MASTER_FLAT.fit
+    - MASTER_BIAS.fit
+    - MASTER_DARK.fit
 - PROJECT_NAME2
   - ...
 - PROJECT_NAMEN
@@ -48,7 +48,7 @@ pipenv --venv
 > /home/user/.local/share/virtualenvs/AstrophotoWebStack-xxxxxx
 ```
 
-now update scripts/app.wsgi with the path to the virtualenv.
+now update `scripts/app.wsgi` with the path to the virtualenv.
 
 ## Apache configuration
 ```xml
