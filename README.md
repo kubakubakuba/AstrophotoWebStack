@@ -1,7 +1,7 @@
 # AstrophotoWebStack
 A web interface for astrophoto stacking
 
-.env file:
+Create a .env file:
 ```bash
 SECRET_KEY=123ada
 HOME_DIR=/mnt/astrotmp/
