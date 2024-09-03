@@ -22,16 +22,17 @@ def get_toml_files():
 if __name__ == "__main__":
 	files = get_toml_files()
 	
-	for f in files:
+	for current in files:
 
-		data = toml.load(os.path.join(STACK_FOLDER, f))
+		filepath = os.path.join(STACK_FOLDER, current)
+		data = toml.load(filepath)
 		# Replace "None" with None
 		for key in data:
 			if data[key] == "None":
 				data[key] = ''
 		
 		# Same name as the toml file but with a .log extension
-		log_file = os.path.join(STACK_FOLDER, f.replace('.toml', '.log'))
+		log_file = os.path.join(STACK_FOLDER, current.replace('.toml', '.log'))
 
 		# Set up logging
 		logger = logging.getLogger()
@@ -72,8 +73,8 @@ if __name__ == "__main__":
 			sw.stack()
 
 		with open(log_file, 'a') as f:
-			f.write(f"Created at {f}\n")
+			f.write(f"Created at {filepath}\n")
 			f.write(f"Result file: {os.path.join(DOC_ROOT, data['root_folder'], 'result.fit')}\n")
 
 		# Remove the .toml file
-		#os.remove(os.path.join(STACK_FOLDER, current))
+		os.remove(filepath)

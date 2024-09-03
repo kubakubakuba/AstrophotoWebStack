@@ -1,5 +1,6 @@
 from flask import Flask, render_template, session, redirect, url_for, request, jsonify, send_file
 from markupsafe import escape
+from markdown import markdown
 from datetime import datetime
 import toml
 import os
@@ -171,7 +172,17 @@ def download(stack_id):
 
 @app.route('/about')
 def about():
-	return render_template('about.html')
+	#load markdown from docs/tutorial.md
+
+	file = os.path.join('docs', 'tutorial.md')
+	content = ''
+
+	with open(file, 'r') as f:
+		content = f.read()
+
+	content = markdown(content)
+
+	return render_template('about.html', content=content)
 
 @app.errorhandler(400)
 def page_bad_request(e):
