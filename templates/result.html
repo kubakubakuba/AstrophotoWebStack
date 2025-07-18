@@ -5,16 +5,22 @@ AstrophotoWebStack
 {% endblock title %}
 
 {% block content %}
-{% for d in data %}
-	{{ data[d] }},
-{% endfor %}
 
-<hr />
-
-<h2>Stacking log:</h2>
-
-<div id="logContent" style="height: 600px; overflow-y: scroll; border: 1px solid #ccc;">
-    <pre id="logText" style="margin: 0;"></pre>
+<div class="pane-container">
+	<div class="left-pane">
+		<h2>Stacking log:</h2>
+		<div id="logContent" class="log-box">
+			<pre id="logText" style="margin: 0; white-space: pre-wrap;"></pre>
+		</div>
+	</div>
+	<div class="right-pane">
+		<h2 class="preview-pane-text">Result preview (stretched):</h2>
+		<a href="/preview/{{ stack_id }}" target="_blank">
+			<img src="/thumbnail/{{ stack_id }}" alt="Result thumbnail" class="result-image">
+		</a>
+		<br>
+		<a href="/download/{{ stack_id }}" class="download-button">Download result.fit</a>
+	</div>
 </div>
 
 <script>
@@ -27,8 +33,26 @@ AstrophotoWebStack
 				if (data.log_content.includes('Trace is stopped')) {
 					if (data.log_content.includes('[status: success]')) {
 						document.getElementById('logContent').style.color = '#d4edda';
-					} else {
+					}  
+
+					if (data.log_content.includes('[status: error]')) {
 						document.getElementById('logContent').style.color = '#f8d7da';
+						//load oops.gif from static/img/oops.gif instead of the result preview image
+						const resultImage = document.querySelector('.result-image');
+						resultImage.src = "{{ url_for('static', filename='img/err/oops' + log_check + '.jpg') }}"
+						resultImage.alt = "Error occurred during stacking";
+
+						//delete the download button
+						const downloadButton = document.querySelector('.download-button');
+						if (downloadButton) {
+							downloadButton.remove();
+						}
+
+						//delete the Result preview text
+						const resultPreviewText = document.querySelector('.preview-pane-text');
+						if (resultPreviewText) {
+							resultPreviewText.remove();
+						}
 					}
 				}
 				logText.parentElement.scrollTop = logText.scrollHeight; // Autoscroll to the bottom
@@ -38,8 +62,5 @@ AstrophotoWebStack
 
 	fetchLogContent();
 </script>
-
-<h2>Result:</h2>
-<a href="/download/{{ stack_id }}">result.fit</a>
 
 {% endblock content %}

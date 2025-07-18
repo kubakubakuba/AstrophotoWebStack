@@ -111,6 +111,11 @@ class SirilWrapper():
 			light_path = os.path.join(self.data["workdir"], self.data["light_folder"])
 			self.light(light_path, process_dir)
 
+			##### THUMBNAIL #####
+			self.create_thumbnail()
+
+			self.cmd.close()
+
 			
 		except Exception as e :
 			print("\n**** ERROR *** " +  str(e) + "\n" )    
@@ -156,5 +161,15 @@ class SirilWrapper():
 
 		self.cmd.register('pp_light')
 		self.cmd.stack('r_pp_light', type='rej', sigma_low=self.data["sigma_low"], sigma_high=self.data["sigma_high"], norm='addscale', output_norm=True, out='../result')
-		self.cmd.close()
-		
+
+	def create_thumbnail(self):
+		try:
+			result_file = os.path.join(self.data["workdir"], 'result.fit')
+			thumbnail_file = os.path.join(self.data["workdir"], 'result')
+
+			self.cmd.load(result_file)
+			self.cmd.autostretch()
+			self.cmd.savejpg(thumbnail_file, 92)
+
+		except Exception as e:
+			print("\n**** ERROR *** " +  str(e) + "\n" )

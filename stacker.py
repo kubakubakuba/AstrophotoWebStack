@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import logging
 from contextlib import redirect_stdout
 from wrapper import SirilWrapper
+from PIL import Image
 
 load_dotenv()
 
@@ -72,9 +73,23 @@ if __name__ == "__main__":
 		with redirect_stdout(stream_to_logger):
 			sw.stack()
 
+		try:
+			large_jpg_path = os.path.join(data["workdir"], 'result.jpg')
+			if os.path.exists(large_jpg_path):
+				thumb_path = os.path.join(data["workdir"], 'result.thumb.jpg')
+				with Image.open(large_jpg_path) as img:
+					img.thumbnail((800, 800))
+					img.save(thumb_path, "JPEG")
+				logger.info(f"Preview created at {large_jpg_path}")
+				logger.info(f"Thumbnail created at {thumb_path}")
+
+		except Exception as e:
+			logger.error(f"Failed to create thumbnail: {e}")
+
 		with open(log_file, 'a') as f:
-			f.write(f"Created at {filepath}\n")
+			f.write(f"Created with {filepath}\n")
 			f.write(f"Result file: {os.path.join(DOC_ROOT, data['root_folder'], 'result.fit')}\n")
 
-		# Remove the .toml file
-		os.remove(filepath)
+		# rename the toml file to .toml.done
+		done_file = os.path.join(STACK_FOLDER, current.replace('.toml', '.toml.done'))
+		os.rename(filepath, done_file)

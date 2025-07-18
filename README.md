@@ -40,6 +40,10 @@ The folder name does not matter, it is selected in the APWebUI. The masters are 
 
 Currently, .xisf images are not supported, will be added in a future version (hopefully).
 
+## Installation
+
+<details><summary>Outdated installation method</summary>
+
 ## Installation (APWebUI)
 ```bash
 pip install pipenv
@@ -89,3 +93,20 @@ sudo apt-get install siril
 (newer version, on normal apt there is an older version)
 
 Now you can run the stacker.py script or automate it with cron (run it automatically every x minutes when it is not already running).
+
+</details>
+
+
+The application can be run through Docker compose, which is the recommended way to run it, as it simplifies the deployment.
+
+Just build the Docker container containing the `siril-cli` and the WebUI, which is done by:
+```bash
+docker compose build
+```
+
+And then run the container:
+```bash
+docker compose up -d
+```
+
+You can configure necessary variables in the `docker-compose.yml` file.

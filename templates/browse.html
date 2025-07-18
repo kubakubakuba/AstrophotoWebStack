@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}
+Browse Stacks
+{% endblock title %}
+
+{% block content %}
+<div class="browse-container">
+	<h2 style="text-align: center;">Recent Stacking Jobs</h2>
+	<table class="job-table">
+		<thead>
+			<tr>
+				<th>Directory</th>
+				<th>Date Initiated</th>
+				<th>Status</th>
+				<th>Link</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for job in jobs %}
+			<tr>
+				<td>{{ job.dir }}</td>
+				<td>{{ job.display_date }}</td>
+				<td>
+					<span class="status-{{ job.status.lower().replace(' ', '-') }}">{{ job.status }}</span>
+				</td>
+				<td>
+					<a href="{{ job.url }}" class="view-link">View</a>
+				</td>
+			</tr>
+			{% else %}
+			<tr>
+				<td colspan="4" style="text-align: center; padding: 20px;">No recent stacking jobs found.</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock content %}

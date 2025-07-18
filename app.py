@@ -5,6 +5,8 @@ from datetime import datetime
 import toml
 import os
 from dotenv import load_dotenv
+import re
+import hashlib
 
 load_dotenv()
 
@@ -117,7 +119,7 @@ def stack():
 		log_file = os.path.join(STACK_FOLDER, f"stack_{current_timestamp}.log")
 
 		with open(log_file, 'w') as f:
-			f.write(f"Created at {current_timestamp}\n")
+			f.write(f"Created at {current_timestamp} in {DOC_ROOT}/{root_folder}\n")
 
 		#redirect to status page with the stack_id
 		return redirect(url_for('status', stack_id=current_timestamp))
@@ -139,7 +141,11 @@ def status(stack_id):
 
 	stack = toml.load(stack_file)
 
-	return render_template('status.html', data=stack, stack_folder=STACK_FOLDER, stack_id=stack_id)
+	data_names = ["Root Folder", "Masters Folder", "Master Bias", "Master Dark", "Master Flat",
+			 "Bias Folder", "Dark Folder", "Flat Folder", "Light Folder", "Image Type",
+			 "Sigma Low", "Sigma High"]
+
+	return render_template('status.html', data=stack, stack_folder=STACK_FOLDER, stack_id=stack_id, data_names=data_names)
 
 @app.route('/log/<int:stack_id>')
 def get_log(stack_id):
@@ -148,9 +154,128 @@ def get_log(stack_id):
 		log_content = file.read()
 	return jsonify(log_content=log_content)
 
+@app.route('/thumbnail/<int:stack_id>')
+def get_thumbnail(stack_id):
+	log_path = os.path.join(STACK_FOLDER, f"stack_{stack_id}.log")
+	if not os.path.exists(log_path):
+		return render_template('404.html'), 404
+
+	with open(log_path, 'r') as f:
+		log_content = f.read()
+		match = re.search(r"Thumbnail created at (.+)", log_content)
+		
+		if not match:
+			return render_template('404.html'), 404
+		
+		thumb_path = match.group(1).strip()
+
+	if not os.path.exists(thumb_path):
+		return render_template('404.html'), 404
+
+	return send_file(thumb_path)
+
+@app.route('/preview/<int:stack_id>')
+def get_preview(stack_id):
+	log_path = os.path.join(STACK_FOLDER, f"stack_{stack_id}.log")
+	if not os.path.exists(log_path):
+		return render_template('404.html'), 404
+	
+	with open(log_path, 'r') as f:
+		log_content = f.read()
+		match = re.search(r"Preview created at (.+)", log_content)
+
+		if not match:
+			return render_template('404.html'), 404
+
+		preview_path = match.group(1).strip()
+
+	if not os.path.exists(preview_path):
+		return render_template('404.html'), 404
+
+	return send_file(preview_path)
+
+@app.route('/browse')
+def browse():
+	n = 10  # Number of recent stacks to display
+	log_files = [f for f in os.listdir(STACK_FOLDER) if f.endswith('.log')]
+	
+	# Sort files by date, most recent first
+	log_files.sort(reverse=True)
+
+	jobs = []
+	for log_file in log_files[:n]:
+		match = re.match(r"stack_(\d+)\.log", log_file)
+		if not match:
+			continue
+
+		stack_id = match.group(1)
+		log_path = os.path.join(STACK_FOLDER, log_file)
+		toml_path = os.path.join(STACK_FOLDER, f"stack_{stack_id}.toml")
+		
+		status = ''
+		folder = ''
+		url = ''
+
+		# Determine status and URL
+		if os.path.exists(toml_path):
+			status = 'In Progress'
+			url = url_for('status', stack_id=stack_id)
+		else:  # Job is finished
+			url = url_for('result', stack_id=stack_id)
+			try:
+				with open(log_path, 'r') as f:
+					log_content = f.read()
+				if '[status: error]' in log_content:
+					status = 'Errored'
+				else:
+					status = 'Completed'
+			except IOError:
+				status = 'Unknown'
+
+		# Extract folder from the first line
+		try:
+			with open(log_path, 'r') as f:
+				first_line = f.readline()
+				folder_match = re.search(r" in (.+)", first_line)
+				if folder_match:
+					folder = folder_match.group(1).strip()
+				else:
+					folder = 'N/A'
+		except (IOError, IndexError):
+			folder = 'N/A'
+
+		# Format the timestamp for display
+		try:
+			date_obj = datetime.strptime(stack_id, "%Y%m%d%H%M%S")
+			display_date = date_obj.strftime('%Y-%m-%d %H:%M:%S')
+		except ValueError:
+			display_date = stack_id
+
+		jobs.append({
+			'id': stack_id,
+			'display_date': display_date,
+			'status': status,
+			'url': url,
+			'dir': folder
+		})
+
+	return render_template('browse.html', jobs=jobs)
+
 @app.route('/result/<int:stack_id>')
 def result(stack_id):
-	return render_template('result.html', stack_id=stack_id)
+	log_file = os.path.join(STACK_FOLDER, f"stack_{stack_id}.log")
+	#get the hash of the log file
+	log_md5 = None
+	if os.path.exists(log_file):
+		hasher = hashlib.md5()
+		with open(log_file, 'rb') as f:
+			hasher.update(f.read())
+		log_md5 = hasher.hexdigest()
+
+	#get the first char number of the md5 hash and convert it from hex to dec int
+	log_check = str(int(log_md5[0], 16))
+
+	return render_template('result.html', stack_id=stack_id, log_check=log_check)
 
 @app.route('/download/<int:stack_id>')
 def download(stack_id):
@@ -168,7 +293,6 @@ def download(stack_id):
 		return render_template('404.html'), 404
 	
 	return send_file(result_file, as_attachment=True)
-
 
 @app.route('/about')
 def about():

@@ -1,3 +1,5 @@
 __pycache__/
 .env
 pysiril-0.0.15-py3-none-any.whl
+
+old/

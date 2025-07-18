@@ -5,16 +5,34 @@ AstrophotoWebStack
 {% endblock title %}
 
 {% block content %}
-{% for d in data %}
-	{{ data[d] }},
-{% endfor %}
 
-<hr />
-
-<h2>Stacking log:</h2>
-
-<div id="logContent" style="height: 600px; overflow-y: scroll; border: 1px solid #ccc;">
-    <pre id="logText" style="margin: 0;"></pre>
+<div class="pane-container">
+	<div class="left-pane">
+		<h2>Stacking log:</h2>
+		<div id="logContent" class="log-box">
+			<pre id="logText" style="margin: 0; white-space: pre-wrap;"></pre>
+		</div>
+	</div>
+	<div class="right-pane">
+		<h2>Stacking Parameters:</h2>
+		<div class="param-box">
+			<ul style="list-style-type: none; padding: 0;">
+				{% for key, value in data.items() %}
+					{% if loop.revindex <= 1 %}
+						<li style="padding: 15px 15px 0px 15px; border-bottom: none;">
+							<strong style="text-transform: capitalize;">{{ key.replace('_', ' ') }}:</strong>
+							<span style="color: #b4b3b3;">{{ value }}</span>
+						</li>
+					{% else %}
+						<li style="padding: 15px; border-bottom: 1px solid #eee;">
+							<strong style="text-transform: capitalize;">{{ key.replace('_', ' ') }}:</strong> 
+							<span style="color: #b4b3b3;">{{ value }}</span>
+						</li>
+					{% endif %}
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
 </div>
 
 <script>

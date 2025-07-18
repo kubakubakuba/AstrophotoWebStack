@@ -7,7 +7,7 @@
 }
 
 body {
-	background-color: #777777!important;
+	background-color: #2d3034!important;
 }
 
 .main-content {
@@ -17,7 +17,7 @@ body {
 	/*margin-left: auto;
 	margin-right: auto;
 	margin-top: auto;*/
-	max-width: 1000px;
+	/*max-width: 1000px;*/
 }
 
 .scrollable-list {
@@ -176,4 +176,129 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 
 .form-control-range {
 	width: 100%;
+}
+
+
+
+.pane-container {
+	display: flex;
+	flex-wrap: wrap; /* Allows items to wrap to the next line */
+	gap: 20px;
+}
+.left-pane, .right-pane {
+	flex: 1; /* Each pane tries to take up equal space */
+	min-width: 350px; /* Prevents panes from getting too squished */
+	align-content: center;
+	text-align: center; /* Centers text in each pane */
+}
+.log-box {
+	height: 600px; 
+	overflow-y: scroll; 
+	border: 1px solid #ccc; 
+	background-color: #222; 
+	color: #eee; 
+	font-family: monospace; 
+	padding: 10px; 
+	border-radius: 5px;
+}
+#logContent {
+	text-align: left;
+}
+
+.right-pane {
+	text-align: center;
+}
+.result-image {
+	max-width: 100%; 
+	height: auto; 
+	border: 1px solid #ccc; 
+	border-radius: 5px;
+}
+
+.param-box {
+	max-width: 100%; 
+	height: auto; 
+	border: 1px solid #ccc; 
+	border-radius: 5px;
+	text-align: left;
+}
+
+@media (max-width: 1200px) {
+	.pane-container {
+		flex-direction: column;
+	}
+
+	.left-pane, .right-pane {
+		flex: none; /* Prevents panes from trying to take equal space */
+		width: 100%; /* Makes each pane take full width */
+		min-width: auto; /* Resets the minimum width */
+	}
+}
+
+.download-button {
+	display: block; /* Makes the link a block-level box */
+	box-sizing: border-box; /* Ensures padding doesn't affect the total width */
+	width: 100%; /* Makes the button take the full width of its container */
+	background-color: #212529; /* Dark background */
+	color: white; /* White text */
+	padding: 12px 15px;
+	text-align: center;
+	text-decoration: none; /* Removes the underline */
+	border-radius: 5px;
+	margin-top: 10px; /* Adds space between the image and the button */
+	font-weight: bold;
+	transition: background-color 0.2s;
+}
+.download-button:hover {
+	background-color: #495057; /* Slightly lighter on hover */
+}
+
+
+.browse-container {
+	max-width: 900px; /* Sets a max width for the content */
+	margin: 40px auto; /* Centers the container on the page */
+	padding: 20px;
+}
+.job-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 20px;
+	background-color: #1e1e1e; /* Dark background for the table */
+	border-radius: 8px;
+	overflow: hidden; /* Ensures the border-radius is applied to corners */
+}
+.job-table th, .job-table td {
+	border: 1px solid #333; /* Darker borders */
+	padding: 15px;
+	text-align: left;
+	word-break: break-word; /* Ensures long folder paths don't break layout */
+}
+.job-table th {
+	background-color: #252525; /* Slightly lighter header background */
+	font-weight: bold;
+	color: #ffffff;
+}
+.job-table tr:hover {
+	background-color: #2a2a2a; /* Hover effect */
+}
+.status-completed {
+	color: #4caf50; /* A vibrant green */
+	font-weight: bold;
+}
+.status-errored {
+	color: #f44336; /* A vibrant red */
+	font-weight: bold;
+}
+.status-in-progress {
+	color: #ffeb3b; /* A vibrant yellow */
+	font-weight: bold;
+}
+.view-link {
+	text-decoration: none;
+	color: #3498db; /* A bright blue for links */
+	font-weight: bold;
+	transition: color 0.2s;
+}
+.view-link:hover {
+	color: #5dade2;
 }
