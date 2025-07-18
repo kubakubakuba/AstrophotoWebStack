@@ -4,3 +4,4 @@ toml
 markdown
 gunicorn
 Pillow
+Pygments

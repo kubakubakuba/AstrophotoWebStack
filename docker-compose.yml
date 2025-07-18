@@ -2,26 +2,26 @@ services:
   web:
     build: .
     ports:
-      - "8000:8000"
+      - "${SERVER_PORT}:8000"
     volumes:
-      - /mnt/c/Users/Jakub/Pictures/.siril/data:/data
+      - ${HOST_DATA_PATH}:/data
     environment:
       - HOME_DIR=/data
       - SIRIL_CLI=/usr/sbin/siril-cli
-      - SECRET_KEY=your_super_secret_key_here
+      - SECRET_KEY=${SECRET_KEY}
 
   stacker:
     build: .
     volumes:
-      - /mnt/c/Users/Jakub/Pictures/.siril/data:/data
+      - ${HOST_DATA_PATH}:/data
     environment:
       - HOME_DIR=/data
       - SIRIL_CLI=/usr/sbin/siril-cli
-      - SECRET_KEY=your_super_secret_key_here
+      - SECRET_KEY=${SECRET_KEY}
     command: >
       sh -c "while true; do
         echo 'Running stacker script...';
         python stacker.py;
-        echo 'Stacker run complete. Sleeping for 60 seconds...';
-        sleep 60;
+        echo 'Stacker run complete. Sleeping for ${STACKER_INTERVAL_S} seconds...';
+        sleep ${STACKER_INTERVAL_S};
       done"

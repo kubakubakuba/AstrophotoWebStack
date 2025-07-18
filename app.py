@@ -194,6 +194,44 @@ def get_preview(stack_id):
 
 	return send_file(preview_path)
 
+@app.route('/new', methods=['GET', 'POST'])
+def new_project():
+	if request.method == 'POST':
+		creation_method = request.form.get('creation_method')
+		dir_name = ''
+
+		if creation_method == 'custom':
+			dir_name = request.form.get('custom_name')
+
+		elif creation_method == 'structured':
+			proj_date = request.form.get('project_date')
+			obj_type = request.form.get('object_type')
+			obj_number = request.form.get('object_number')
+			dir_name = f"{proj_date}_{obj_type}_{obj_number}"
+
+		if not dir_name:
+			return redirect(url_for('new_project'))
+
+		dir_name = re.sub(r'[./\\]', '', dir_name)
+
+		if not dir_name:
+			return redirect(url_for('new_project'))
+
+		project_path = os.path.join(DOC_ROOT, dir_name)
+		
+		os.makedirs(project_path, exist_ok=True)
+
+		if request.form.get('create_subdirs'):
+			subdirs = ['light', 'dark', 'flat', 'bias', 'master']
+			for subdir in subdirs:
+				os.makedirs(os.path.join(project_path, subdir), exist_ok=True)
+
+		return redirect(url_for('stack'))
+
+	today_date = datetime.now().strftime('%m-%d-%y')
+	object_types = ['M', 'NGC', 'IC', 'SH', 'VDB', 'LBN', 'PGC', 'B', 'C', 'LDN']
+	return render_template('new.html', today_date=today_date, object_types=object_types)
+
 @app.route('/browse')
 def browse():
 	n = 10  # Number of recent stacks to display
@@ -301,10 +339,13 @@ def about():
 	file = os.path.join('docs', 'tutorial.md')
 	content = ''
 
-	with open(file, 'r') as f:
-		content = f.read()
+	try:
+		with open(file, 'r') as f:
+			content = f.read()
+	except FileNotFoundError:
+		content = "# Error\nCould not find `docs/tutorial.md`."
 
-	content = markdown(content)
+	content = markdown(content, extensions=['fenced_code', 'codehilite'])
 
 	return render_template('about.html', content=content)
 

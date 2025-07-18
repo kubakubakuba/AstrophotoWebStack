@@ -1,37 +1,125 @@
-# How to stack data in APWebUI
+# How to stack data in AstrophotoWebUI
+
+## Create a new project
+
+Go to the [new project page](../new) and select how you want to create a new project.
+![tut-newproject](../static/img/new.png)
+
+You can select a preformated directory name, or name it yourself. The app can also create the necessary subfolders for you, unless you wish to not do so.
+
+This will create a new project folder in your `data` directory, to which you will need to copy your data. Click on the "Create and Go Stack" button to select
+the project folders.
 
 ## Folder selection
 
-Go to the [stacking page](../stack) and select the folder with your data.
+After you visit the [stacking page](../stack) you can select which data is in what folders.
 
-![tutorial01](../static/img/tut01.png)
+![tut-newstack](../static/img/newstack.png)
 
-Your data needs to be in subfolders in the folders you selected (specific folders for light, biases, darks and flats). You can name those folders any way you want, you will select them in the next step.
+You can also select already created master files, which are placed to another specific folder. This will speedup the stacking process (which in itself is pretty fast in Siril).
 
-![tutorial02](../static/img/tut02.png)
+You can also select if your data is color (CFA) or monochrome (MONO). A Winsorized sigma clipping parameters can also be changed from their default values.
 
-Select the image type (color or mono), default is CFA (color filter array), if you wish to change it, do so in the Image Type dropdown.
-
-Change or keep the default values for Sigma clipping, and click on Stack button.
-
-## Masters
-
-If you wish to use masters, select the folder with masters (needs to be in the project folder).
-
-After you select the master folder, you can select individual masters for each type of correction image. The related folder will be greyed out.
-
-Masters need to be 16-bit FP files, .xisf are not currently supported (i will hopefully add support later).
-
-![tutorial03](../static/img/tut03.png)
+This section will be expanded upon in the future, now it only supports basic stacking.
 
 ## Stacking
 
-After you click on the Stack button, you will be automatically redirected to the stacking page.
+After you click on the Stack button, you will be automatically redirected to the stacking progress page (with the current stacking id).
 
-![tutorial04](../static/img/tut04.png)
+![tut-stacking](../static/img/stacking.png)
 
-You will hopefully see a moving log, in which you can observe the stacking process.
+Here you will see the current stacking progress (by the periodically updated log), with the set stacking parameters.
 
-If the stacking is successful, the log will turn green and you will be redirected to the results page from where you can download the stacked image.
+## Browse
 
-![tutorial05](../static/img/tut05.png)
+![tut-browse](../static/img/browse.png)
+
+If you loose the stacking id, you can always access the latest stacking processes in the browse section, which shows the current state of the processes, and provides links to them.
+
+## Results
+
+![tut-results](../static/img/result.png)
+
+After the stacking is completed, you will be automatically redirected to the results page, which shows the stacked image preview (auto stretched for visibility),
+and with a download link to the stacked `.fit` image. This image is also located in the `data` directory, in the project folder, called `master.fit`.
+
+# AstrophotoWebStack
+A web interface for astrophoto stacking using Siril.
+
+Currently, .xisf (PixInsight) images are not supported, may be added in a future version.
+
+## Installation
+
+The application can be run through Docker compose, which is the recommended way to run it, as it simplifies the deployment.
+
+The Docker container being built is based on `Arch Linux`, which is the only one I found to reliably compile the latest `siril-cli` from source via `AUR`, from the package `siril-cli-git`. The container also compiles the latest python package `pysiril` from source, which is used to interface with the `siril-cli`.
+
+The docker compose file is simply:
+```yaml
+services:
+  web:
+    build: .
+    ports:
+      - "${SERVER_PORT}:8000"
+    volumes:
+      - ${HOST_DATA_PATH}:/data
+    environment:
+      - HOME_DIR=/data
+      - SIRIL_CLI=/usr/sbin/siril-cli
+      - SECRET_KEY=${SECRET_KEY}
+
+  stacker:
+    build: .
+    volumes:
+      - ${HOST_DATA_PATH}:/data
+    environment:
+      - HOME_DIR=/data
+      - SIRIL_CLI=/usr/sbin/siril-cli
+      - SECRET_KEY=${SECRET_KEY}
+    command: >
+      sh -c "while true; do
+        echo 'Running stacker script...';
+        python stacker.py;
+        echo 'Stacker run complete. Sleeping for ${STACKER_INTERVAL_S} seconds...';
+        sleep ${STACKER_INTERVAL_S};
+      done"
+```
+
+Which needs a `.env` file with the following variables:
+```bash
+HOST_DATA_PATH=/path/to/data/dir
+
+SERVER_PORT=8000
+
+STACKER_INTERVAL_S=60
+
+SECRET_KEY=your_super_secret_key_here_change_me
+```
+
+To build the docker compose file, simply run:
+```bash
+docker compose build
+```
+
+And then run it:
+```bash
+docker compose up -d
+```
+
+# Acknowledgments
+This project uses the following libraries and tools:
+- [Siril](https://free-astro.org/index.php/Siril) - for image
+- [Flask](https://flask.palletsprojects.com/) - for the web framework
+
+
+This project is licensed under the Beerware License as seen below (or see the LICENSE file):
+```
+/*
+ * ----------------------------------------------------------------------------
+ * "THE BEER-WARE LICENSE" (Revision 42):
+ * <admin@swpelc.eu> wrote this file.  As long as you retain this notice you
+ * can do whatever you want with this stuff. If we meet some day, and you think
+ * this stuff is worth it, you can buy me a beer in return.          Jakub Pelc
+ * ----------------------------------------------------------------------------
+ */
+```

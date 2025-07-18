@@ -5,141 +5,122 @@ AstrophotoWebStack
 {% endblock title %}
 
 {% block content %}
-    <div class="card">
-        <div class="card-body">
-            <form method="post" id="stackingForm">
-                <h5 class="text-center">Root folder</h5>
-                <div class="form-group">
-                    <select id="rootFolder" name="rootFolder" class="form-control" required onchange="populateSubFolders();">
-                        <option value="" disabled selected>Select a root folder</option>
-                        {% for folder in folders.keys() %}
-                            <option value="{{ folder }}">{{ folder }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <hr />
+    <div class="stacking-container">
+	<h2 class="text-center">Stacking</h2>
+	<form method="post" id="stackingForm">
+		<div class="form-group">
+			<label for="rootFolder" class="form-label">Root folder</label>
+			<select id="rootFolder" name="rootFolder" class="form-control" required onchange="populateSubFolders();">
+				<option value="" disabled selected>Select a root folder</option>
+				{% for folder in folders.keys() %}
+					<option value="{{ folder }}">{{ folder }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<hr />
 
-                <div id="collapsedSections" style="display: none;">
-                    <h5 class="text-center">Masters Folder</h5>
-                    <div class="form-group">
-                        <select id="mastersFolder" name="mastersFolder" class="form-control" disabled onchange="populateMasterDropdowns();">
-                            <option value="" disabled selected>Select a masters folder</option>
-                        </select>
-                    </div>
-                    <hr />
+		<div id="collapsedSections" style="display: none;">
+			<div class="form-group">
+				<label for="mastersFolder" class="form-label">Masters Folder</label>
+				<select id="mastersFolder" name="mastersFolder" class="form-control" disabled onchange="populateMasterDropdowns();">
+					<option value="" disabled selected>Select a masters folder</option>
+				</select>
+			</div>
+			<hr />
 
-                    <h5 class="text-center">Masters</h5>
-                    <div class="form-group row justify-content-center">
-                        <div class="col-auto">
-                            <label for="masterBias">Master Bias:</label>
-                            <select id="masterBias" name="masterBias" class="form-control" disabled onchange="greyOutFolder('biasFolder', this.value);">
-                                <option value="" disabled selected>Select a master bias</option>
-                            </select>
-                        </div>
-                        <div class="col-auto">
-                            <label for="masterDark">Master Dark:</label>
-                            <select id="masterDark" name="masterDark" class="form-control" disabled onchange="greyOutFolder('darkFolder', this.value);">
-                                <option value="" disabled selected>Select a master dark</option>
-                            </select>
-                        </div>
-                        <div class="col-auto">
-                            <label for="masterFlat">Master Flat:</label>
-                            <select id="masterFlat" name="masterFlat" class="form-control" disabled onchange="greyOutFolder('flatFolder', this.value);">
-                                <option value="" disabled selected>Select a master flat</option>
-                            </select>
-                        </div>
-                    </div>
+			<h5 class="text-center">Masters</h5>
+			<div class="form-group row justify-content-center">
+				<div class="col-auto">
+					<label for="masterBias">Master Bias:</label>
+					<select id="masterBias" name="masterBias" class="form-control" disabled onchange="greyOutFolder('biasFolder', this.value);">
+						<option value="" disabled selected>Select a master bias</option>
+					</select>
+				</div>
+				<div class="col-auto">
+					<label for="masterDark">Master Dark:</label>
+					<select id="masterDark" name="masterDark" class="form-control" disabled onchange="greyOutFolder('darkFolder', this.value);">
+						<option value="" disabled selected>Select a master dark</option>
+					</select>
+				</div>
+				<div class="col-auto">
+					<label for="masterFlat">Master Flat:</label>
+					<select id="masterFlat" name="masterFlat" class="form-control" disabled onchange="greyOutFolder('flatFolder', this.value);">
+						<option value="" disabled selected>Select a master flat</option>
+					</select>
+				</div>
+			</div>
 
-                    <hr />
+			<hr />
 
-                    <h5 class="text-center">Folders</h5>
-                    <div class="form-group row">
-                        <div class="col">
-                            <label for="biasFolder">Biases:</label>
-                            <select id="biasFolder" name="biasFolder" class="form-control" disabled>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col">
-                            <label for="darkFolder">Darks:</label>
-                            <select id="darkFolder" name="darkFolder" class="form-control" disabled>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col">
-                            <label for="flatFolder">Flats:</label>
-                            <select id="flatFolder" name="flatFolder" class="form-control" disabled>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col">
-                            <label for="lightFolder">Lights:</label>
-                            <select id="lightFolder" name="lightFolder" class="form-control" disabled>
-                            </select>
-                        </div>
-                    </div>
+			<h5 class="text-center">Folders</h5>
+			<div class="form-group">
+				<label for="biasFolder">Biases:</label>
+				<select id="biasFolder" name="biasFolder" class="form-control" disabled>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="darkFolder">Darks:</label>
+				<select id="darkFolder" name="darkFolder" class="form-control" disabled>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="flatFolder">Flats:</label>
+				<select id="flatFolder" name="flatFolder" class="form-control" disabled>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="lightFolder">Lights:</label>
+				<select id="lightFolder" name="lightFolder" class="form-control" disabled>
+				</select>
+			</div>
 
-                    <hr />
+			<hr />
 
-                    <h5 class="text-center">Image Type</h5>
-                    <div class="form-group row justify-content-center">
-                        <div class="col-auto">
-                            <select id="imageType" name="imageType" class="form-control">
-                                <option value="cfa">CFA</option>
-                                <option value="mono">Mono</option>
-                            </select>
-                        </div>
-                    </div>
+			<h5 class="text-center">Image Type</h5>
+			<div class="form-group row justify-content-center">
+				<div class="col-auto">
+					<select id="imageType" name="imageType" class="form-control">
+						<option value="cfa">CFA</option>
+						<option value="mono">Mono</option>
+					</select>
+				</div>
+			</div>
 
-                    <hr />
+			<hr />
 
-                    <h5 class="text-center">Image integration - Winsorized sigma clipping</h5>
-                    <div class="form-group row">
-                        <label for="sigmaLow" class="col-sm-2 col-form-label">Sigma Low</label>
-                        <div class="col-sm-8">
-                            <input type="range" class="form-control-range" id="sigmaLow" name="sigmaLow" min="0" max="10" value="3" step="0.1" oninput="updateSliderValue('sigmaLow', 'sigmaLowValue')">
-                        </div>
-                        <div class="col-sm-2">
-                            <span id="sigmaLowValue">3</span>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="sigmaHigh" class="col-sm-2 col-form-label">Sigma High</label>
-                        <div class="col-sm-8">
-                            <input type="range" class="form-control-range" id="sigmaHigh" name="sigmaHigh" min="0" max="10" value="3" step="0.1" oninput="updateSliderValue('sigmaHigh', 'sigmaHighValue')">
-                        </div>
-                        <div class="col-sm-2">
-                            <span id="sigmaHighValue">3</span>
-                        </div>
-                    </div>
+			<h5 class="text-center">Image integration - Winsorized sigma clipping</h5>
+			<div class="form-group row">
+				<label for="sigmaLow" class="col-sm-2 col-form-label">Sigma Low</label>
+				<div class="col-sm-8">
+					<input type="range" class="form-control-range" id="sigmaLow" name="sigmaLow" min="0" max="10" value="3" step="0.1" oninput="updateSliderValue('sigmaLow', 'sigmaLowValue')">
+				</div>
+				<div class="col-sm-2">
+					<span id="sigmaLowValue">3</span>
+				</div>
+			</div>
+			<div class="form-group row">
+				<label for="sigmaHigh" class="col-sm-2 col-form-label">Sigma High</label>
+				<div class="col-sm-8">
+					<input type="range" class="form-control-range" id="sigmaHigh" name="sigmaHigh" min="0" max="10" value="3" step="0.1" oninput="updateSliderValue('sigmaHigh', 'sigmaHighValue')">
+				</div>
+				<div class="col-sm-2">
+					<span id="sigmaHighValue">3</span>
+				</div>
+			</div>
 
-                    <hr />
+			<hr />
 
-                    <div class="form-group row justify-content-center">
-                        <div class="col-auto">
-                            <div class="card card-btn mx-auto mt-4" style="width: 150px;" onclick="validateForm();">
-                                <div class="card-body text-center">
-                                    Stack
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row justify-content-center">
-                        <div class="col-auto">
-                            <div class="card card-btn mx-auto mt-4" style="width: 150px;" onclick="resetForm();">
-                                <div class="card-body text-center">
-                                    Reset
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
+			<div class="form-group row justify-content-center mt-4">
+				<div class="col-auto">
+					<button type="button" class="btn-stack" onclick="validateForm();">Stack</button>
+				</div>
+				<div class="col-auto">
+					<button type="button" class="btn-reset" onclick="resetForm();">Reset</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
 
     <script>
         function populateSubFolders() {

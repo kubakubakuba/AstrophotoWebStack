@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}
+New Project
+{% endblock title %}
+
+{% block content %}
+<div class="new-project-container">
+	<h2 style="text-align: center;">New project</h2>
+	<form action="{{ url_for('new_project') }}" method="post">
+		
+		<!-- Structured Name Section -->
+		<div class="form-section">
+			<label class="radio-label">
+				<input type="radio" name="creation_method" value="structured" checked>
+				Create with a structured name
+			</label>
+			<input type="text" name="project_date" class="form-control" value="{{ today_date }}">
+			<select name="object_type" class="form-control">
+				{% for type in object_types %}
+				<option value="{{ type }}">{{ type }}</option>
+				{% endfor %}
+			</select>
+			<input type="number" name="object_number" class="form-control" placeholder="Object Number (e.g., 31)" required>
+		</div>
+
+		<!-- Custom Name Section -->
+		<div class="form-section">
+			<label class="radio-label">
+				<input type="radio" name="creation_method" value="custom">
+				Create with a custom name
+			</label>
+			<input type="text" name="custom_name" class="form-control" placeholder="e.g., LDN1235">
+		</div>
+
+		<!-- Sub-folder Creation -->
+		<div class="form-section">
+			<label class="checkbox-label">
+				<input type="checkbox" name="create_subdirs" checked>
+				Create standard sub-folders (bias, dark, flat, light, master)
+			</label>
+		</div>
+
+		<button type="submit" class="btn-submit">Create and Go Stack</button>
+	</form>
+</div>
+{% endblock content %}

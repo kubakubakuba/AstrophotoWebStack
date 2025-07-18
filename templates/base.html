@@ -7,6 +7,7 @@
 	<title>{% block title %}{% endblock title %}</title>
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 	<link rel="stylesheet" href="{{ url_for('static', filename='lib/bootstrap.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='lib/pygments-dark.css') }}">
 	<script src="{{ url_for('static', filename='lib/tex-mml-chtml.js') }}"></script>
 		
 	<style>
@@ -43,6 +44,9 @@
 					<ul class="navbar-nav ml-auto">
 						<li class="nav-item">
 							<a class="nav-link" href="/about">About</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="/new">New Project</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="/stack">Stacking</a>
