@@ -1,35 +1,5 @@
 # AstrophotoWebStack
-A web interface for astrophoto stacking
-
-Create a .env file:
-```bash
-SECRET_KEY=123ada
-HOME_DIR=/mnt/astrotmp/
-SIRIL_CLI=/usr/bin/siril-cli
-```
-
-The home dir is the directory where the individual project folders are to be stored. The current type of folder organization supported is:
-
-ROOT_DIR
-- PROJECT_NAME
-  - LIGHTS
-    - LIGHT.fit
-  - DARKS
-    - DARK.fit
-  - FLATS
-    - FLAT.fit
-  - BIAS
-    - BIAS.fit
-  - MASTERS
-    - MASTER_FLAT.fit
-    - MASTER_BIAS.fit
-    - MASTER_DARK.fit
-- PROJECT_NAME2
-  - ...
-
-The folder name does not matter, it is selected in the APWebUI. The masters are to be stored in a separate folder, in order to be used (and selected).
-
-Currently, .xisf images are not supported, will be added in a future version (hopefully).
+A web interface for astrophoto stacking using Siril.
 
 ## Installation
 
@@ -143,6 +113,24 @@ docker compose build
 And then run it:
 ```bash
 docker compose up -d
+```
+
+# Acknowledgments
+This project uses the following libraries and tools:
+- [Siril](https://free-astro.org/index.php/Siril) - for image
+- [Flask](https://flask.palletsprojects.com/) - for the web framework
+
+
+This project is licensed under the Beerware License as seen below (or see the LICENSE file):
+```
+/*
+ * ----------------------------------------------------------------------------
+ * "THE BEER-WARE LICENSE" (Revision 42):
+ * <admin@swpelc.eu> wrote this file.  As long as you retain this notice you
+ * can do whatever you want with this stuff. If we meet some day, and you think
+ * this stuff is worth it, you can buy me a beer in return.          Jakub Pelc
+ * ----------------------------------------------------------------------------
+ */
 ```
 
 
