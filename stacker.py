@@ -9,15 +9,25 @@ from PIL import Image
 load_dotenv()
 
 DOC_ROOT = os.getenv("HOME_DIR")
-STACK_FOLDER = os.path.join(DOC_ROOT, ".stack")
+LOG_DIR = os.getenv("LOG_DIR")
+
+print(f"Using DOC_ROOT: {DOC_ROOT}")
+print(f"Using LOG_DIR: {LOG_DIR}")
 
 def get_toml_files():
 	# Get all .toml files in the DOC_ROOT folder
-	toml_files = []
-	for root, dirs, files in os.walk(DOC_ROOT):
-		for f in files:
-			if f.endswith('.toml'):
-				toml_files.append(f)
+	# toml_files = []
+	# for root, dirs, files in os.walk(DOC_ROOT):
+	# 	for f in files:
+	# 		print(f"Found file: {f}")
+	# 		if f.endswith('.toml'):
+	# 			toml_files.append(f)
+	# print(f"Found {len(toml_files)} .toml files.")
+
+	#get all toml files in LOG_DIR
+	toml_files = [f for f in os.listdir(LOG_DIR) if f.endswith('.toml')]
+	print(f"Found {len(toml_files)} .toml files in {LOG_DIR}.")
+
 	return toml_files
 
 if __name__ == "__main__":
@@ -25,7 +35,7 @@ if __name__ == "__main__":
 	
 	for current in files:
 
-		filepath = os.path.join(STACK_FOLDER, current)
+		filepath = os.path.join(LOG_DIR, current)
 		data = toml.load(filepath)
 		# Replace "None" with None
 		for key in data:
@@ -33,7 +43,7 @@ if __name__ == "__main__":
 				data[key] = ''
 		
 		# Same name as the toml file but with a .log extension
-		log_file = os.path.join(STACK_FOLDER, current.replace('.toml', '.log'))
+		log_file = os.path.join(LOG_DIR, current.replace('.toml', '.log'))
 
 		# Set up logging
 		logger = logging.getLogger()
@@ -91,5 +101,5 @@ if __name__ == "__main__":
 			f.write(f"Result file: {os.path.join(DOC_ROOT, data['root_folder'], 'result.fit')}\n")
 
 		# rename the toml file to .toml.done
-		done_file = os.path.join(STACK_FOLDER, current.replace('.toml', '.toml.done'))
+		done_file = os.path.join(LOG_DIR, current.replace('.toml', '.toml.done'))
 		os.rename(filepath, done_file)

@@ -14,7 +14,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 
 DOC_ROOT = os.getenv("HOME_DIR")
-STACK_FOLDER = os.path.join(DOC_ROOT, ".stack")
+LOG_DIR = os.getenv("LOG_DIR")
 
 # def read_folders_rec(level, curr_dir):
 # 	folders = {}
@@ -98,10 +98,10 @@ def stack():
 		#put the file in .stack folder
 
 		#if .stack folder does not exist, create it
-		if not os.path.exists(STACK_FOLDER):
-			os.makedirs(STACK_FOLDER)
+		if not os.path.exists(LOG_DIR):
+			os.makedirs(LOG_DIR)
 
-		with open(os.path.join(STACK_FOLDER, filename), 'w') as f:
+		with open(os.path.join(LOG_DIR, filename), 'w') as f:
 			f.write(f"doc_root = \"{DOC_ROOT}\"\n")
 			f.write(f"root_folder = \"{root_folder}\"\n")
 			f.write(f"masters_folder = \"{masters_folder}\"\n")
@@ -116,7 +116,7 @@ def stack():
 			f.write(f"sigma_low = {sigma_low}\n")
 			f.write(f"sigma_high = {sigma_high}\n")
 
-		log_file = os.path.join(STACK_FOLDER, f"stack_{current_timestamp}.log")
+		log_file = os.path.join(LOG_DIR, f"stack_{current_timestamp}.log")
 
 		with open(log_file, 'w') as f:
 			f.write(f"Created at {current_timestamp} in {DOC_ROOT}/{root_folder}\n")
@@ -131,12 +131,12 @@ def stack():
 def status(stack_id):
 	file = f"stack_{stack_id}.toml"
 	log =  f"stack_{stack_id}.log"
-	stack_file = os.path.join(STACK_FOLDER, file)
+	stack_file = os.path.join(LOG_DIR, file)
 
 	if not os.path.exists(stack_file):
 		return render_template('404.html'), 404
 	
-	if not os.path.exists(os.path.join(STACK_FOLDER, log)):
+	if not os.path.exists(os.path.join(LOG_DIR, log)):
 		return render_template('404.html'), 404
 
 	stack = toml.load(stack_file)
@@ -145,18 +145,18 @@ def status(stack_id):
 			 "Bias Folder", "Dark Folder", "Flat Folder", "Light Folder", "Image Type",
 			 "Sigma Low", "Sigma High"]
 
-	return render_template('status.html', data=stack, stack_folder=STACK_FOLDER, stack_id=stack_id, data_names=data_names)
+	return render_template('status.html', data=stack, stack_folder=LOG_DIR, stack_id=stack_id, data_names=data_names)
 
 @app.route('/log/<int:stack_id>')
 def get_log(stack_id):
-	log_path = os.path.join(STACK_FOLDER, f"stack_{stack_id}.log")
+	log_path = os.path.join(LOG_DIR, f"stack_{stack_id}.log")
 	with open(log_path, 'r') as file:
 		log_content = file.read()
 	return jsonify(log_content=log_content)
 
 @app.route('/thumbnail/<int:stack_id>')
 def get_thumbnail(stack_id):
-	log_path = os.path.join(STACK_FOLDER, f"stack_{stack_id}.log")
+	log_path = os.path.join(LOG_DIR, f"stack_{stack_id}.log")
 	if not os.path.exists(log_path):
 		return render_template('404.html'), 404
 
@@ -176,7 +176,7 @@ def get_thumbnail(stack_id):
 
 @app.route('/preview/<int:stack_id>')
 def get_preview(stack_id):
-	log_path = os.path.join(STACK_FOLDER, f"stack_{stack_id}.log")
+	log_path = os.path.join(LOG_DIR, f"stack_{stack_id}.log")
 	if not os.path.exists(log_path):
 		return render_template('404.html'), 404
 	
@@ -235,7 +235,7 @@ def new_project():
 @app.route('/browse')
 def browse():
 	n = 10  # Number of recent stacks to display
-	log_files = [f for f in os.listdir(STACK_FOLDER) if f.endswith('.log')]
+	log_files = [f for f in os.listdir(LOG_DIR) if f.endswith('.log')]
 	
 	# Sort files by date, most recent first
 	log_files.sort(reverse=True)
@@ -247,8 +247,8 @@ def browse():
 			continue
 
 		stack_id = match.group(1)
-		log_path = os.path.join(STACK_FOLDER, log_file)
-		toml_path = os.path.join(STACK_FOLDER, f"stack_{stack_id}.toml")
+		log_path = os.path.join(LOG_DIR, log_file)
+		toml_path = os.path.join(LOG_DIR, f"stack_{stack_id}.toml")
 		
 		status = ''
 		folder = ''
@@ -301,7 +301,7 @@ def browse():
 
 @app.route('/result/<int:stack_id>')
 def result(stack_id):
-	log_file = os.path.join(STACK_FOLDER, f"stack_{stack_id}.log")
+	log_file = os.path.join(LOG_DIR, f"stack_{stack_id}.log")
 	#get the hash of the log file
 	log_md5 = None
 	if os.path.exists(log_file):
@@ -320,7 +320,7 @@ def download(stack_id):
 	#serve the file for download
 
 	file = f"stack_{stack_id}.log"
-	log_file = os.path.join(STACK_FOLDER, file)
+	log_file = os.path.join(LOG_DIR, file)
 
 	with open(log_file, 'r') as f:
 		lines = f.readlines()

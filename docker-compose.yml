@@ -1,23 +1,29 @@
 services:
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.web
     ports:
-      - "${SERVER_PORT}:8000"
+      - "${SERVER_PORT}:80"
     volumes:
       - ${HOST_DATA_PATH}:/data
+      - ${HOST_LOG_PATH}:/logs
     environment:
       - HOME_DIR=/data
-      - SIRIL_CLI=/usr/sbin/siril-cli
+      - LOG_DIR=/logs
       - SECRET_KEY=${SECRET_KEY}
 
   stacker:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.stacker
     volumes:
       - ${HOST_DATA_PATH}:/data
+      - ${HOST_LOG_PATH}:/logs
     environment:
       - HOME_DIR=/data
+      - LOG_DIR=/logs
       - SIRIL_CLI=/usr/sbin/siril-cli
-      - SECRET_KEY=${SECRET_KEY}
     command: >
       sh -c "while true; do
         echo 'Running stacker script...';
