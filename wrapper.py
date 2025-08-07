@@ -20,7 +20,7 @@ class SirilWrapper():
 
 		self.has_flats = self.data["flat_folder"] != '' or self.has_master_flat
 		self.has_bias = self.data["bias_folder"] != '' or self.has_master_bias
-		self.has_dark = self.data["dark_folder"] != '' or self.has_master_dark
+		self.has_darks = self.data["dark_folder"] != '' or self.has_master_dark
 
 		self.cfa = self.data["image_type"] == 'cfa'
 
@@ -147,7 +147,7 @@ class SirilWrapper():
 		self.cmd.convert('light', out=process_dir, fitseq=True)
 		self.cmd.cd(process_dir)
 
-		if self.has_flats and self.has_dark:
+		if self.has_flats and self.has_darks:
 			self.cmd.calibrate('light', dark='dark_stacked', flat='pp_flat_stacked', cfa=self.cfa, equalize_cfa=self.cfa, debayer=self.cfa)
 
 		elif self.has_darks:
