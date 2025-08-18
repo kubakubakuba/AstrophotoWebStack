@@ -88,10 +88,15 @@ services:
 Which needs a `.env` file with the following variables:
 ```bash
 HOST_DATA_PATH=/path/to/data/dir
+HOST_LOG_PATH=/path/to/log/dir
 
 SERVER_PORT=8000
 
 STACKER_INTERVAL_S=60
+
+# Fast storage directory for stacking operations (required)
+# This should point to fast storage (e.g., SSD) for better performance
+STACKING_DIRECTORY=/mnt/ssd/astrophoto_stacking
 
 SECRET_KEY=your_super_secret_key_here_change_me
 ```

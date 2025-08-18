@@ -10,9 +10,14 @@ load_dotenv()
 
 DOC_ROOT = os.getenv("HOME_DIR")
 LOG_DIR = os.getenv("LOG_DIR")
+STACKING_DIRECTORY = os.getenv("STACKING_DIRECTORY")
 
 print(f"Using DOC_ROOT: {DOC_ROOT}")
 print(f"Using LOG_DIR: {LOG_DIR}")
+if STACKING_DIRECTORY:
+	print(f"Stacking directory enabled. Using STACKING_DIRECTORY: {STACKING_DIRECTORY}")
+else:
+	print("Stacking directory disabled - working directly in data directory")
 
 def get_toml_files():
 	# Get all .toml files in the DOC_ROOT folder
@@ -98,7 +103,9 @@ if __name__ == "__main__":
 
 		with open(log_file, 'a') as f:
 			f.write(f"Created with {filepath}\n")
-			f.write(f"Result file: {os.path.join(DOC_ROOT, data['root_folder'], 'result.fit')}\n")
+			# Log the actual result location (could be in stacking directory or original location)
+			result_path = os.path.join(data['workdir'], 'result.fit')
+			f.write(f"Result file: {result_path}\n")
 
 		# rename the toml file to .toml.done
 		done_file = os.path.join(LOG_DIR, current.replace('.toml', '.toml.done'))

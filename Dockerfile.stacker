@@ -1,29 +1,29 @@
 FROM archlinux:base-devel
 
 RUN pacman -Syu --noconfirm && \
-	pacman -S --noconfirm git sudo base-devel python python-pip
+    pacman -S --noconfirm git sudo base-devel python python-pip
 
 RUN pacman -S --noconfirm \
-	cfitsio \
-	exiv2 \
-	ffms2 \
-	fftw \
-	gsl \
-	gtk3 \
-	gtksourceview4 \
-	libgit2 \
-	libheif \
-	libraw \
-	libxisf \
-	opencv \
-	wcslib \
-	cmake \
-	meson \
-	ninja \
-	criterion
+    cfitsio \
+    exiv2 \
+    ffms2 \
+    fftw \
+    gsl \
+    gtk3 \
+    gtksourceview4 \
+    libgit2 \
+    libheif \
+    libraw \
+    libxisf \
+    opencv \
+    wcslib \
+    cmake \
+    meson \
+    ninja \
+    criterion
 
 RUN useradd -m builder && \
-	echo "builder ALL=(ALL) NOPASSWD: /usr/bin/pacman" > /etc/sudoers.d/builder
+    echo "builder ALL=(ALL) NOPASSWD: /usr/bin/pacman" > /etc/sudoers.d/builder
 
 WORKDIR /tmp/siril-build
 RUN git clone https://aur.archlinux.org/siril-git.git
@@ -38,17 +38,14 @@ USER root
 RUN pacman -S --noconfirm --needed python-setuptools
 
 RUN git clone https://gitlab.com/free-astro/pysiril.git /tmp/pysiril && \
-	cd /tmp/pysiril && \
-	python setup.py bdist_wheel && \
-	pip install dist/pysiril-*.whl --break-system-packages && \
-	rm -rf /tmp/pysiril
+    cd /tmp/pysiril && \
+    python setup.py bdist_wheel && \
+    pip install dist/pysiril-*.whl --break-system-packages && \
+    rm -rf /tmp/pysiril
 
-RUN useradd -m appuser
 WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt --break-system-packages
 
-COPY --chown=appuser:appuser . .
-
-USER appuser
+COPY . .

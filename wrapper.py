@@ -4,11 +4,13 @@ import shutil
 
 from pysiril.siril   import *
 from pysiril.wrapper import *
+from ssd_manager import StackingDirectoryManager
 
 from dotenv import load_dotenv
 load_dotenv()
 
 SIRIL_EXEC = os.getenv("SIRIL_CLI")
+STACKING_DIRECTORY = os.getenv("STACKING_DIRECTORY")
 
 class SirilWrapper():
 	def __init__(self, data):
@@ -26,6 +28,10 @@ class SirilWrapper():
 
 		self.data["workdir"] = os.path.join(self.data["doc_root"], self.data["root_folder"])
 		self.data["masters_folder"] = os.path.join(self.data["doc_root"], self.data["root_folder"], self.data["masters_folder"])
+		
+		# Initialize stacking directory manager
+		self.stacking_manager = StackingDirectoryManager(STACKING_DIRECTORY)
+		self.original_workdir = self.data["workdir"]
 
 	def stack(self):
 
@@ -35,9 +41,46 @@ class SirilWrapper():
 			self.cmd = Wrapper(app)
 
 			app.Open()
+			
+			# Setup stacking directory if enabled
+			if self.stacking_manager.is_enabled():
+				project_name = self.data["root_folder"]
+				stacking_project_dir = self.stacking_manager.setup_project_directory(project_name)
+				
+				if stacking_project_dir:
+					print(f"Stacking directory enabled. Copying entire project to {stacking_project_dir}")
+					
+					# Copy the entire project directory to stacking location
+					import shutil
+					for item in os.listdir(self.original_workdir):
+						source_item = os.path.join(self.original_workdir, item)
+						dest_item = os.path.join(stacking_project_dir, item)
+						
+						if os.path.isdir(source_item):
+							print(f"Copying directory {source_item} to {dest_item}")
+							shutil.copytree(source_item, dest_item, dirs_exist_ok=True)
+						else:
+							print(f"Copying file {source_item} to {dest_item}")
+							shutil.copy2(source_item, dest_item)
+					
+					# Update ALL paths to point to stacking directory - this is the key fix
+					self.data["workdir"] = stacking_project_dir
+					if self.data["masters_folder"]:
+						masters_folder_name = os.path.basename(self.data["masters_folder"])
+						self.data["masters_folder"] = os.path.join(stacking_project_dir, masters_folder_name)
+					
+					print(f"Project copying completed. All operations will now happen in: {stacking_project_dir}")
+				else:
+					print("Failed to setup stacking directory, using original data directory")
+			else:
+				print("Stacking directory not configured, using original data directory")
 
-			process_dir = os.path.join(self.data["doc_root"], self.data["root_folder"], 'process')
-			root_dir = os.path.join(self.data["doc_root"], self.data["root_folder"])
+			process_dir = os.path.join(self.data["workdir"], 'process')
+			root_dir = self.data["workdir"]
+			print(f"DEBUG: Working in directory: {self.data['workdir']}")
+			print(f"DEBUG: Process directory: {process_dir}")
+			print(f"DEBUG: Root directory: {root_dir}")
+			
 			if not os.path.exists(process_dir):
 				os.makedirs(process_dir)
 
@@ -114,11 +157,30 @@ class SirilWrapper():
 			##### THUMBNAIL #####
 			self.create_thumbnail()
 
+			##### CLEANUP SOURCE FILES #####
+			if self.stacking_manager.is_enabled():
+				# List of source folders to clean up (keep process folder and results)
+				source_folders_to_clean = []
+				if self.data["light_folder"]:
+					source_folders_to_clean.append(self.data["light_folder"])
+				if self.data["bias_folder"]:
+					source_folders_to_clean.append(self.data["bias_folder"])
+				if self.data["dark_folder"]:
+					source_folders_to_clean.append(self.data["dark_folder"])
+				if self.data["flat_folder"]:
+					source_folders_to_clean.append(self.data["flat_folder"])
+				if self.data["masters_folder"] and os.path.basename(self.data["masters_folder"]):
+					source_folders_to_clean.append(os.path.basename(self.data["masters_folder"]))
+				
+				print(f"Cleaning up source files: {source_folders_to_clean}")
+				self.stacking_manager.cleanup_intermediate_files(self.data["workdir"], source_folders_to_clean)
+				print("Cleanup completed - only final results and previews preserved in stacking directory")
+
 			self.cmd.close()
 
 			
 		except Exception as e :
-			print("\n**** ERROR *** " +  str(e) + "\n" )    
+			print("\n**** ERROR *** " +  str(e) + "\n" )
 
 		app.Close()
 		del app
