@@ -1,8 +1,6 @@
 services:
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile.web
+    image: ghcr.io/kubakubakuba/astrophotowebstack-web:latest
     ports:
       - "${SERVER_PORT}:80"
     volumes:
@@ -19,9 +17,7 @@ services:
       - ./.env
 
   stacker:
-    build:
-      context: .
-      dockerfile: Dockerfile.stacker
+    image: ghcr.io/kubakubakuba/astrophotowebstack-stacker:latest
     volumes:
       - ${HOST_DATA_PATH}:/data:rw
       - ${HOST_LOG_PATH}:/logs:rw

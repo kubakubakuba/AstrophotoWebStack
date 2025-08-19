@@ -1,0 +1,73 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches: [ deploy ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ deploy ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_WEB: ${{ github.repository }}-web
+  IMAGE_NAME_STACKER: ${{ github.repository }}-stacker
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata for web image
+      id: meta-web
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_WEB }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=raw,value=latest,enable=${{ github.ref == 'refs/heads/deploy' }}
+
+    - name: Extract metadata for stacker image
+      id: meta-stacker
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_STACKER }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=raw,value=latest,enable=${{ github.ref == 'refs/heads/deploy' }}
+
+    - name: Build and push web image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile.web
+        push: true
+        tags: ${{ steps.meta-web.outputs.tags }}
+        labels: ${{ steps.meta-web.outputs.labels }}
+
+    - name: Build and push stacker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile.stacker
+        push: true
+        tags: ${{ steps.meta-stacker.outputs.tags }}
+        labels: ${{ steps.meta-stacker.outputs.labels }}
